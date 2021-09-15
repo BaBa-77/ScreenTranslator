@@ -1,0 +1,185 @@
+#include "OEMVersion.h"
+#include "AEE.h"
+#include "AEEStdLib.h"
+#include "OEMNotify.h"
+#include "AEE_OEMDispatch.h"
+#include "AEE_OEMDownload.h"
+#include "AEEConfig.h"
+#include <AEE_OEM.h>
+
+#include "../bre2/breStartup.h"
+
+static AEECallback gCBResetBREW;
+static boolean gbInResetBREW = FALSE;
+static AEECallback gCBStartLauncherApp;
+
+static void ResetBREW(void *pUnused) {
+    //Set this bool. Calling AEE_Exit() will result in NTF_IDLE. We do not want AutoStartApp to
+    //be started there.
+    gbInResetBREW = TRUE;
+
+    AEE_Exit();
+
+    gbInResetBREW = FALSE;
+
+    //AEE_Init will also take care of starting AutoStart App
+    AEE_Init(0);
+}
+
+int OEM_Notify(OEMNotifyEvent evt, uint32 dw) {
+    OEMAppEvent *pae = (OEMAppEvent *) dw;
+
+    switch (evt) {
+        case OEMNTF_MODLOAD: {
+            OEMNotifyModLoad *pML = (OEMNotifyModLoad *) dw;
+
+            if ((void *) 0 == pML->pLocation) {
+                return EFAILED;
+            }
+            return SUCCESS;
+        }
+
+        case OEMNTF_IDLE:
+            if (gbInResetBREW)
+                break;
+            CALLBACK_Init(&gCBStartLauncherApp, StartLauncherApp, NULL);
+            AEE_ResumeCallback(&gCBStartLauncherApp,0);
+            break;
+
+        case OEMNTF_RESET_BREW:
+            CALLBACK_Init(&gCBResetBREW, ResetBREW, NULL);
+            AEE_ResumeCallback(&gCBResetBREW, NULL);
+            break;
+
+        case OEMNTF_RESET:
+            break;
+        case OEMNTF_APP_EVENT:
+            if (pae->evt == EVT_APP_START ||
+                pae->evt == EVT_APP_STOP ||
+                pae->evt == EVT_APP_SUSPEND ||
+                pae->evt == EVT_APP_RESUME) {
+                DBGEVENT(pae->evt, pae->cls);
+            }
+
+            break;
+        case OEMNTF_APP_CTXT_NEW:    // fall through
+        case OEMNTF_APP_CTXT_DELETE: // fall through
+            break;
+
+        case OEMNTF_APP_CTXT_SWITCH:
+            break;
+        default:
+            break;
+    }
+    return (0);
+}
+
+boolean OEM_IsClsOKInSafeMode(uint32 clsid)
+{
+    return TRUE;
+}
+
+boolean OEM_SimpleBeep(BeepType nBeepType, boolean bLoud)
+{
+    return TRUE;
+}
+
+int OEM_GetUpdateVersion(char *pszVersion, int *pnLen) {
+    int nUpdateVerLen = 0;
+
+    if (0 == pnLen) {
+        return EFAILED;
+    }
+
+    nUpdateVerLen = STRLEN(BREW_UPDATE_VERSION) + 1;
+
+    if (0 == pszVersion) {
+        *pnLen = nUpdateVerLen - 1; // not include null termination.
+        return SUCCESS;
+    }
+
+    if (*pnLen < nUpdateVerLen) {
+        *pnLen = nUpdateVerLen - 1; // not include null termination.
+        *pszVersion = 0;
+        return EFAILED;
+    }
+
+    STRCPY(pszVersion, BREW_UPDATE_VERSION);
+    *pnLen = nUpdateVerLen - 1;  // not include null termination.
+
+    return SUCCESS;
+}
+
+void OEM_AuthorizeDownload(IDownload * pd, DLITEMID iID, DLPRICEID iPrice,DLItem * pItem,PFNCHECKDLCB pfn, void * pUser)
+{
+    pfn(pUser,iID,iPrice,0);
+}
+
+int OEM_SetConfig(AEEConfigItem i, void * pBuff, int nSize) {
+    return EUNSUPPORTED;
+}
+
+static void GetMobileInfo(AEEMobileInfo * pMobileInfo) {
+    pMobileInfo->nCurrNAM = 0;
+    pMobileInfo->dwESN = 0xab2b3c4f;
+    strcpy(pMobileInfo->szMobileID, "1234567812345678");
+}
+
+int OEM_GetConfig(AEEConfigItem i, void * pBuff, int nSize)
+{
+    switch(i) {
+        case CFGI_MOBILEINFO:
+            if(!pBuff || nSize != sizeof(AEEMobileInfo))
+                return(EBADPARM);
+
+            GetMobileInfo((AEEMobileInfo *)pBuff);
+            return(0);
+        case CFGI_AUTOSTART: {
+            AEECLSID * pc = (AEECLSID *)pBuff;
+
+            if(nSize != sizeof(AEECLSID))
+                return(EBADPARM);
+
+            *pc = 0x01009FF0;
+
+            return SUCCESS;
+        }
+    }
+    return EUNSUPPORTED;
+}
+
+#include "../brewemu.h"
+#include <android/native_window.h>
+
+void OEM_GetDeviceInfo(AEEDeviceInfo * pi) {
+    // TODO:
+
+    pi->cxScreen = ANativeWindow_getWidth(gNativeWindow);
+    pi->cyScreen = ANativeWindow_getHeight(gNativeWindow);
+    pi->cxAltScreen = 0;
+    pi->cyAltScreen = 0;
+    pi->cxScrollBar = 8;
+    pi->wEncoding = AEE_ENC_UTF8;
+    pi->wMenuTextScroll = 200;
+    pi->nColorDepth = 24;
+    pi->wMenuImageDelay = 1000;
+    pi->dwRAM = 64 * 1024 * 1024; // TODO: actually not
+    pi->bAltDisplay = FALSE;
+    pi->bFlip = FALSE;
+    pi->bVibrator = TRUE;
+    pi->bExtSpeaker = TRUE;
+    pi->bVR = FALSE;
+    pi->bPosLoc = FALSE;
+    pi->bMIDI = FALSE;
+    pi->bCMX = FALSE;
+    pi->bPen = TRUE;
+    pi->dwPromptProps = 0;
+    pi->wKeyCloseApp = AVK_END;
+    pi->wKeyCloseAllApps = 0;
+    pi->dwLang = 0;
+    pi->wStructSize = offsetof(AEEDeviceInfo, dwNetLinger);
+}
+
+int OEM_GetDeviceInfoEx(AEEDeviceItem nItem, void *pBuff, int *nSize) {
+    return EUNSUPPORTED;
+}
