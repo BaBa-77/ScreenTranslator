@@ -61,6 +61,9 @@ set_property(TARGET aeetapi PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DI
 add_library(aeeunzip STATIC IMPORTED)
 set_property(TARGET aeeunzip PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/aeeunzip.fixed.lib)
 
+add_library(aeebci STATIC IMPORTED)
+set_property(TARGET aeebci PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/aeebci.fixed.lib)
+
 add_library(z STATIC IMPORTED)
 set_property(TARGET z PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/z.fixed.lib)
 
@@ -168,6 +171,7 @@ find_package(ZLIB)
 target_link_libraries( brewemu
         brew
         aee
+        aeebci
         aeedialog
         aeepdiparsers
         aeevcalstore

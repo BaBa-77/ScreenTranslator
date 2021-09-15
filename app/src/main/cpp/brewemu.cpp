@@ -14,6 +14,7 @@ extern "C" {
 #include <sys/stat.h>
 #include <android/native_window_jni.h>
 #include <android/log.h>
+#include <android/keycodes.h>
 #include <thread>
 #include <AEE_OEM.h>
 
@@ -80,6 +81,7 @@ static AEECallback gCBStartLauncherApp;
 
 #include "bre2/breStartup.h"
 #include <cassert>
+#include <AEE_OEMEvent.h>
 
 extern "C"
 JNIEXPORT void JNICALL
@@ -118,4 +120,48 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *en
     // StartLauncherApp(NULL);
     // CALLBACK_Init(&gCBStartLauncherApp, StartLauncherApp, NULL);
     // AEE_ResumeCallback(&gCBStartLauncherApp,0);
+}
+
+AVKType translateKeycode(jint keyCode) {
+    AVKType avk = AVK_UNDEFINED;
+    switch(keyCode) {
+        case AKEYCODE_DPAD_DOWN: avk = AVK_DOWN; break;
+        case AKEYCODE_DPAD_UP: avk = AVK_UP; break;
+        case AKEYCODE_DPAD_LEFT: avk = AVK_LEFT; break;
+        case AKEYCODE_DPAD_RIGHT: avk = AVK_RIGHT; break;
+
+        case AKEYCODE_DPAD_CENTER:
+        case AKEYCODE_ENTER:
+            avk = AVK_SELECT; break;
+
+        case AKEYCODE_CLEAR:
+        case AKEYCODE_BACK:
+        case AKEYCODE_ESCAPE:
+            avk = AVK_CLR; break;
+    }
+
+    return avk;
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyUp(JNIEnv *env, jobject thiz, jint keyCode) {
+    AVKType avk = translateKeycode(keyCode);
+    if(avk == AVK_UNDEFINED) {
+        return false;
+    }
+    AEE_KeyRelease(avk);
+    return true;
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
+Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyDown(JNIEnv *env, jobject thiz, jint keyCode) {
+    AVKType avk = translateKeycode(keyCode);
+    if(avk == AVK_UNDEFINED) {
+        return false;
+    }
+    AEE_Key(avk);
+    AEE_KeyPress(avk);
+    return true;
 }

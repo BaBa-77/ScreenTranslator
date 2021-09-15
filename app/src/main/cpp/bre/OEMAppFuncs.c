@@ -8,6 +8,7 @@
 #include <AEE_OEM.h>
 
 #include "../bre2/breStartup.h"
+#include "../bre2/breDisplayConfig.h"
 
 static AEECallback gCBResetBREW;
 static boolean gbInResetBREW = FALSE;
@@ -140,7 +141,9 @@ int OEM_GetConfig(AEEConfigItem i, void * pBuff, int nSize)
             if(nSize != sizeof(AEECLSID))
                 return(EBADPARM);
 
-            *pc = 0x01009FF0;
+            // *pc = 0x01035893;// 0x01009FF0;
+            *pc = 0x010719f9;
+            // *pc = 0x01009FF0;
 
             return SUCCESS;
         }
@@ -154,8 +157,8 @@ int OEM_GetConfig(AEEConfigItem i, void * pBuff, int nSize)
 void OEM_GetDeviceInfo(AEEDeviceInfo * pi) {
     // TODO:
 
-    pi->cxScreen = ANativeWindow_getWidth(gNativeWindow);
-    pi->cyScreen = ANativeWindow_getHeight(gNativeWindow);
+    pi->cxScreen = BRE_DISPLAY_CONFIG_WIDTH;
+    pi->cyScreen = BRE_DISPLAY_CONFIG_HEIGHT;
     pi->cxAltScreen = 0;
     pi->cyAltScreen = 0;
     pi->cxScrollBar = 8;

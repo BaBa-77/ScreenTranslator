@@ -9,6 +9,7 @@
 #include "AEE_OEM.h"
 #include "AEEModTable.h"
 #include "AEEStdLib.h"
+#include "../bre2/breDisplayConfig.h"
 
 static boolean gbInit = 0;
 static IBitmap *gpDevBitmap = NULL;
@@ -95,8 +96,8 @@ extern int OEMDisplayDev_New(IShell * piShell, AEECLSID cls, void **ppif)
     }
 
     ANativeWindow_setBuffersGeometry(gNativeWindow, 0, 0, AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM);
-    int width = ANativeWindow_getWidth(gNativeWindow);
-    int height = ANativeWindow_getHeight(gNativeWindow);
+    int width = BRE_DISPLAY_CONFIG_WIDTH;// ANativeWindow_getWidth(gNativeWindow);
+    int height = BRE_DISPLAY_CONFIG_HEIGHT;//ANativeWindow_getHeight(gNativeWindow);
 
     pMe->pvt = (AEEVTBL(IDisplayDev) *)&gOEMDisplayDevFuncs;
     pMe->nRefs = 1;
@@ -127,8 +128,8 @@ extern int OEMBitmapDev_New(IShell * piShell, AEECLSID cls, void **ppif)
             return nErr;
         }
 
-        int width = ANativeWindow_getWidth(gNativeWindow);
-        int height = ANativeWindow_getHeight(gNativeWindow);
+        int width = BRE_DISPLAY_CONFIG_WIDTH;//ANativeWindow_getWidth(gNativeWindow);
+        int height = BRE_DISPLAY_CONFIG_HEIGHT;//ANativeWindow_getHeight(gNativeWindow);
 
         nErr = OEMBitmap24_NewEx(width, height, pDispDev->framebuffer, NULL, pDispDev, (IBitmap**)ppif);
         if (SUCCESS != nErr) {
@@ -252,9 +253,9 @@ static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc)
 
     // MEMSET(pMe->framebuffer, 0xFF, buffer.width * 4 * 5);
 
-    for(int x = updateRect.left; x < updateRect.right; x++) {
-        for(int y = updateRect.top; y < updateRect.bottom; y++) {
-            int inOffset = (x + y * buffer.width) * 4;
+    for(int x = updateRect.left; x < updateRect.right && x < BRE_DISPLAY_CONFIG_WIDTH; x++) {
+        for(int y = updateRect.top; y < updateRect.bottom && y < BRE_DISPLAY_CONFIG_HEIGHT; y++) {
+            int inOffset = (x + y * BRE_DISPLAY_CONFIG_WIDTH) * 4;
             int outOffset = (x + y * buffer.stride) * 4;
             char r = pMe->framebuffer[inOffset + 0];
             char g = pMe->framebuffer[inOffset + 1];
