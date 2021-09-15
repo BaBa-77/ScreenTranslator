@@ -181,7 +181,7 @@ void OEM_GetDeviceInfo(AEEDeviceInfo * pi) {
 }
 
 static const RGBVAL gSystemColors[] = {
-    0, 
+    0,
     0x000000FF, // CLR_USER_TEXT
     0xFFFFFFFF, // CLR_USER_BACKGROUND
     0x2c3e50ff, // CLR_USER_LINE

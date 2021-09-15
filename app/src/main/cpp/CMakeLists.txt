@@ -58,6 +58,12 @@ set_property(TARGET aeemm PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}
 add_library(aeetapi STATIC IMPORTED)
 set_property(TARGET aeetapi PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/aeetapi.fixed.lib)
 
+add_library(aeeunzip STATIC IMPORTED)
+set_property(TARGET aeeunzip PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/aeeunzip.fixed.lib)
+
+add_library(z STATIC IMPORTED)
+set_property(TARGET z PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/z.fixed.lib)
+
 add_library( brewemu SHARED
         brewemu.cpp
         brewemu.h
@@ -177,8 +183,9 @@ target_link_libraries( brewemu
         aeeseed
         aeemm
         aeetapi
+        aeeunzip
+        z
         png
         ${log-lib}
         ${android-lib}
-        ZLIB::ZLIB
         )
