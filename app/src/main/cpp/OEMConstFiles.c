@@ -33,6 +33,10 @@ OEMs must add references below
 
 #if !defined(_AEEWIN)
 extern AEEConstFile gBREWAPPMGR_MIF;
+extern AEEConstFile gBREWAPPMGRLS_BAR;
+extern AEEConstFile gBREWAPPMGRLN_BAR;
+extern AEEConstFile gBREWAPPMGRCOMMON_BAR;
+extern AEEConstFile gOEMCFG_TXT;
 
 #if defined(AEE_SIMULATOR) // temporary
 extern AEEConstFile gAPPMGR_BAR;
@@ -98,6 +102,10 @@ static const AEEConstFile *  gpOEMConstFiles[] = {
 #if   !defined(_AEEWIN)
 #if defined(FEATURE_APP_MANAGER)
                                                             &gBREWAPPMGR_MIF,
+                                                            &gBREWAPPMGRLS_BAR,
+                                                            &gBREWAPPMGRLN_BAR,
+                                                            &gBREWAPPMGRCOMMON_BAR,
+                                                            &gOEMCFG_TXT,
 #endif
 #if defined(AEE_SIMULATOR)
                                                             &gAPPMGR_BAR,

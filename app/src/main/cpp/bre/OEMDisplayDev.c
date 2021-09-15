@@ -230,7 +230,7 @@ static int OEMDisplayDev_QueryInterface(IDisplayDev *pMe, AEECLSID clsid, void *
 
 static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc)
 {
-    DBGPRINTF("OEMDisplayDev_Update");
+    // DBGPRINTF("OEMDisplayDev_Update");
 
     ANativeWindow_Buffer buffer;
     ARect updateRect;

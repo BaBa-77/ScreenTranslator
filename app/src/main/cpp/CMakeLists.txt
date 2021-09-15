@@ -97,6 +97,21 @@ add_library( brewemu SHARED
 
         bre2/breStartup.c
 
+        brewappmgr/BrewAppMgr.c
+        brewappmgr/BrewAppMgr.h
+        brewappmgr/BrewAppMgrUtils.c
+        brewappmgr/BrewAppMgrUtils.h
+        brewappmgr/BrewAppMgrSettings.h
+        brewappmgr/MobileShop.c
+        brewappmgr/MobileShop.h
+        brewappmgr/brewappmgr_mif.c
+        brewappmgr/oemcfg_txt.c
+        brewappmgr/brewappmgrcommon_bar.c
+        brewappmgr/brewappmgrln_bar.c
+        brewappmgr/brewappmgrls_bar.c
+
+        AEEAppGen.c
+        AEEModGen.c
         basic11.h
         basic11b.h
         basic14.h
@@ -159,7 +174,7 @@ add_library( brewemu SHARED
 
 set_property(SOURCE bre/ARMLegacyABI.S PROPERTY LANGUAGE C)
 
-add_definitions(-DAEE_STATIC)
+add_definitions(-DAEE_STATIC -DBREW_STATIC_APP)
 
 target_include_directories(brewemu PRIVATE "D:\\src\\BREW\\BREWPKMSM315SP02\\inc" "D:\\src\\BREW\\BREWPKMSM315SP02\\pk\\inc" "D:\\src\\BREW\\BREWPKMSM315SP02\\sdk\\inc")
 target_link_options(brewemu PRIVATE -Wl,-z,notext -Wl,-z,muldefs -Wl,-error-limit=0)

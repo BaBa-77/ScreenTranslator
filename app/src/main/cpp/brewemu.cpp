@@ -138,6 +138,9 @@ AVKType translateKeycode(jint keyCode) {
         case AKEYCODE_BACK:
         case AKEYCODE_ESCAPE:
             avk = AVK_CLR; break;
+
+        case AKEYCODE_X:
+            avk = AVK_END; break;
     }
 
     return avk;

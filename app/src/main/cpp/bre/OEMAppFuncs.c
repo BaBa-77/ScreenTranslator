@@ -9,6 +9,7 @@
 
 #include "../bre2/breStartup.h"
 #include "../bre2/breConfig.h"
+#include "../brewappmgr/BrewAppMgr.bid"
 
 static AEECallback gCBResetBREW;
 static boolean gbInResetBREW = FALSE;
@@ -142,13 +143,16 @@ int OEM_GetConfig(AEEConfigItem i, void * pBuff, int nSize)
                 return(EBADPARM);
 
             // *pc = 0x01035893;// 0x01009FF0;
-            *pc = 0x010719f9;
+            *pc = AEECLSID_BREWAPPMGR_BID;//0x010719f9;
             // *pc = 0x01009FF0;
 
             return SUCCESS;
         }
     }
     return EUNSUPPORTED;
+}
+
+void OEM_SetBAM_ADSAccount(void) {
 }
 
 #include "../brewemu.h"
