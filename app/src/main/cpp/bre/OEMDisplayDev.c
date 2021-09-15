@@ -261,9 +261,9 @@ static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc)
             char g = pMe->framebuffer[inOffset + 1];
             char b = pMe->framebuffer[inOffset + 2];
 
-            outFB[outOffset + 0] = r;
+            outFB[outOffset + 0] = b;
             outFB[outOffset + 1] = g;
-            outFB[outOffset + 2] = b;
+            outFB[outOffset + 2] = r;
             outFB[outOffset + 3] = 0xFF;
         }
     }
