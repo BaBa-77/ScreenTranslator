@@ -180,6 +180,46 @@ void OEM_GetDeviceInfo(AEEDeviceInfo * pi) {
     pi->wStructSize = offsetof(AEEDeviceInfo, dwNetLinger);
 }
 
-int OEM_GetDeviceInfoEx(AEEDeviceItem nItem, void *pBuff, int *nSize) {
+static const RGBVAL gSystemColors[] = {
+    0, 
+    0x000000FF, // CLR_USER_TEXT
+    0xFFFFFFFF, // CLR_USER_BACKGROUND
+    0x2c3e50ff, // CLR_USER_LINE
+    0x000000ff, // CLR_SYS_TITLE
+    0xFFFFFFFF, // CLR_SYS_TITLE_TEXT
+    0xecf0f1ff, // CLR_SYS_ITEM
+    0x000000FF, // CLR_SYS_ITEM_TEXT
+    0x2980b9FF, // CLR_SYS_ITEM_SEL
+    0xFFFFFFFF, // CLR_SYS_ITEM_SEL_TEXT
+    0xbdc3c7FF, // CLR_SYS_WIN
+    0xFFFFFFFF, // CLR_SYS_FRAME_HI
+    0x000000FF, // CLR_SYS_FRAME_LO
+    0xCCCCCCFF, // CLR_SYS_LT_SHADOW
+    0x444444FF, // CLR_SYS_DK_SHADOW
+    0x95a5a6FF, // CLR_SYS_SCROLLBAR
+    0x34495eFF, // CLR_SYS_SCROLLBAR_FILL,
+    0 // CLR_SYS_LAST
+};
+
+int OEM_GetDeviceInfoEx(AEEDeviceItem nItem, void *pBuff, int *pnSize) {
+    switch(nItem) {
+        case AEE_DEVICEITEM_SYS_COLORS_DISP1: {
+            int nSize;
+
+            if(!pnSize)
+                return(EBADPARM);
+
+            nSize = MIN(*pnSize, CLR_SYS_LAST * sizeof(RGBVAL));
+            *pnSize = CLR_SYS_LAST * sizeof(RGBVAL);
+
+            if (NULL == pBuff) {
+                return SUCCESS;
+            }
+
+            MEMCPY(pBuff, gSystemColors, nSize);
+
+            return SUCCESS;
+        }
+    }
     return EUNSUPPORTED;
 }
