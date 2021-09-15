@@ -135,12 +135,73 @@ AVKType translateKeycode(jint keyCode) {
             avk = AVK_SELECT; break;
 
         case AKEYCODE_CLEAR:
-        case AKEYCODE_BACK:
         case AKEYCODE_ESCAPE:
+        case AKEYCODE_C:
             avk = AVK_CLR; break;
 
+        case AKEYCODE_MENU:
+        case AKEYCODE_W:
+            avk = AVK_SOFT1; break;
+
+        case AKEYCODE_BACK:
+        case AKEYCODE_E:
+            avk = AVK_SOFT2; break;
+
         case AKEYCODE_X:
+        case AKEYCODE_ENDCALL:
             avk = AVK_END; break;
+
+        case AKEYCODE_Z:
+        case AKEYCODE_CALL:
+            avk = AVK_SEND; break;
+
+        case AKEYCODE_0:
+        case AKEYCODE_NUMPAD_0:
+            avk = AVK_0; break;
+
+        case AKEYCODE_1:
+        case AKEYCODE_NUMPAD_1:
+            avk = AVK_1; break;
+
+        case AKEYCODE_2:
+        case AKEYCODE_NUMPAD_2:
+            avk = AVK_2; break;
+
+        case AKEYCODE_3:
+        case AKEYCODE_NUMPAD_3:
+            avk = AVK_3; break;
+
+        case AKEYCODE_4:
+        case AKEYCODE_NUMPAD_4:
+            avk = AVK_4; break;
+
+        case AKEYCODE_5:
+        case AKEYCODE_NUMPAD_5:
+            avk = AVK_5; break;
+
+        case AKEYCODE_6:
+        case AKEYCODE_NUMPAD_6:
+            avk = AVK_6; break;
+
+        case AKEYCODE_7:
+        case AKEYCODE_NUMPAD_7:
+            avk = AVK_7; break;
+
+        case AKEYCODE_8:
+        case AKEYCODE_NUMPAD_8:
+            avk = AVK_8; break;
+
+        case AKEYCODE_9:
+        case AKEYCODE_NUMPAD_9:
+            avk = AVK_9; break;
+
+        case AKEYCODE_STAR:
+        case AKEYCODE_NUMPAD_MULTIPLY:
+            avk = AVK_STAR; break;
+
+        case AKEYCODE_POUND:
+        case AKEYCODE_NUMPAD_DIVIDE:
+            avk = AVK_POUND; break;
     }
 
     return avk;

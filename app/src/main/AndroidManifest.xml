@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="io.github.usernameak.brewemulator">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -8,7 +9,8 @@
         android:allowBackup="true"
         android:label="Melange"
         android:supportsRtl="true">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:resizeableActivity="false" android:screenOrientation="portrait"
+            tools:targetApi="n">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

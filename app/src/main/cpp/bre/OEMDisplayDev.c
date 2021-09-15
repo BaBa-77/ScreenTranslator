@@ -238,6 +238,15 @@ static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc)
     updateRect.top = prc->y;
     updateRect.right = prc->x + prc->dx;
     updateRect.bottom = prc->y + prc->dy;
+
+    int nativeWidth = ANativeWindow_getWidth(gNativeWindow), nativeHeight = ANativeWindow_getHeight(gNativeWindow);
+    if(updateRect.right > nativeWidth) {
+        updateRect.right = nativeWidth;
+    }
+    if(updateRect.bottom > nativeHeight) {
+        updateRect.bottom = nativeHeight;
+    }
+
     int error_code = ANativeWindow_lock(gNativeWindow, &buffer, &updateRect);
     if(error_code != 0) {
         return EFAILED;
