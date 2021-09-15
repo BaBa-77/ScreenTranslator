@@ -7,6 +7,7 @@
 #include "AEEModTable.h"
 #include "AEE_OEM.h"
 #include "AEEStdLib.h"
+#include "../bre2/breConfig.h"
 
 #ifdef RELEASEIF
 #undef RELEASEIF
@@ -80,8 +81,12 @@ static int CSysClock_GetTimeUS(ISysClock *po, uint64struct *pstUS) {
         return EFAILED;
     }
 
-    // uint64 time = tv.tv_sec * 1000000 + tv.tv_nsec / 1000;
-    uint64 time = 996877357ULL * 1000000ULL;
+    uint64 time;
+    if(BRE_FORCED_TIME != 0ULL) {
+        time = BRE_FORCED_TIME * 1000000ULL;
+    } else {
+        time = (tv.tv_sec * 1000000ULL + tv.tv_nsec / 1000ULL) - (315964800ULL * 1000000ULL);
+    }
     if(pstUS) {
         *pstUS = uint64struct_from_uint64(time);
     }

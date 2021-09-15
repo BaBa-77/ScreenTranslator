@@ -6,6 +6,7 @@
 #include <OEMHeap.h>
 #include <assert.h>
 #include "AEE_OEM.h"
+#include "../bre2/breConfig.h"
 
 struct _OEMTAPI  {
     uint32 dwRefs;
@@ -49,7 +50,7 @@ int OEMTAPI_Destroy( OEMTAPI * pme ) {
 
 int OEMTAPI_GetStatus( OEMTAPI * po, TAPIStatus * ps) {
     memset(ps, 0, sizeof(TAPIStatus));
-    strcpy(ps->szMobileID, "1234567812345678");
+    strcpy(ps->szMobileID, BRE_CONFIG_IMEI);
     ps->state = PS_OFFLINE;
     return SUCCESS;
 }

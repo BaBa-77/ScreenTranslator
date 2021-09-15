@@ -9,7 +9,7 @@
 #include "AEE_OEM.h"
 #include "AEEModTable.h"
 #include "AEEStdLib.h"
-#include "../bre2/breDisplayConfig.h"
+#include "../bre2/breConfig.h"
 
 static boolean gbInit = 0;
 static IBitmap *gpDevBitmap = NULL;

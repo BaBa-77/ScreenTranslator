@@ -1,4 +1,0 @@
-#pragma once
-
-#define BRE_DISPLAY_CONFIG_WIDTH 240
-#define BRE_DISPLAY_CONFIG_HEIGHT 320

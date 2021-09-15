@@ -8,7 +8,7 @@
 #include <AEE_OEM.h>
 
 #include "../bre2/breStartup.h"
-#include "../bre2/breDisplayConfig.h"
+#include "../bre2/breConfig.h"
 
 static AEECallback gCBResetBREW;
 static boolean gbInResetBREW = FALSE;
@@ -122,8 +122,8 @@ int OEM_SetConfig(AEEConfigItem i, void * pBuff, int nSize) {
 
 static void GetMobileInfo(AEEMobileInfo * pMobileInfo) {
     pMobileInfo->nCurrNAM = 0;
-    pMobileInfo->dwESN = 0xab2b3c4f;
-    strcpy(pMobileInfo->szMobileID, "1234567812345678");
+    pMobileInfo->dwESN = BRE_CONFIG_ESN;
+    strcpy(pMobileInfo->szMobileID, BRE_CONFIG_IMEI);
 }
 
 int OEM_GetConfig(AEEConfigItem i, void * pBuff, int nSize)
