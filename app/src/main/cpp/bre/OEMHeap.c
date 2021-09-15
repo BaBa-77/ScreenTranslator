@@ -1,9 +1,10 @@
 #include "OEMHeap.h"
 
 #include <sys/mman.h>
+#include "../bre2/breConfig.h"
 
 void * g_puHeapBytes   = NULL;
-uint32 g_uHeapBytesLen = 64 * 1024 * 1024;
+uint32 g_uHeapBytesLen = BRE_CONFIG_HEAP_SIZE;
 
 int OEM_GetHeapInitBytes(void **ppHeapBytes, uint32 *puHeapBytesLen) {
     if(!g_puHeapBytes) {

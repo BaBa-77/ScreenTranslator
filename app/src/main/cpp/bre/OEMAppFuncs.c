@@ -170,7 +170,7 @@ void OEM_GetDeviceInfo(AEEDeviceInfo * pi) {
     pi->wMenuTextScroll = 200;
     pi->nColorDepth = 24;
     pi->wMenuImageDelay = 1000;
-    pi->dwRAM = 64 * 1024 * 1024; // TODO: actually not
+    pi->dwRAM = BRE_CONFIG_HEAP_SIZE;
     pi->bAltDisplay = FALSE;
     pi->bFlip = FALSE;
     pi->bVibrator = TRUE;
