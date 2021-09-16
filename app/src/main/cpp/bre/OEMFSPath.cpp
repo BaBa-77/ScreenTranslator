@@ -16,13 +16,13 @@ typedef struct OEMFSGNPMap {
 } OEMFSGNPMap;
 
 static const OEMFSGNPMap gapmBrewToOEM[] = {
-        { AEEFS_RINGERS_DIR, "shared/ringers", TRUE },
-        { AEEFS_MOD_DIR, "shared/mod", TRUE },
-        { AEEFS_MIF_DIR, "shared/mif", TRUE },
-        { AEEFS_ADDRESS_DIR, "shared/address", TRUE },
+        { AEEFS_RINGERS_DIR, "ringers", TRUE },
+        { AEEFS_MOD_DIR, "mod", TRUE },
+        { AEEFS_MIF_DIR, "mif", TRUE },
+        { AEEFS_ADDRESS_DIR, "address", TRUE },
         { AEEFS_SHARED_DIR, "shared", TRUE },
         { AEEFS_ROOT_DIR, "root", TRUE },
-        { 0, 0, 0 },
+        { nullptr, nullptr, 0 },
 };
 
 uint16 OEMFS_GetMaxPathLength(void) {
