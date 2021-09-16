@@ -22,7 +22,7 @@ public class MainActivity extends Activity {
         mainContext.mainActivity = this;
 
         EmulatorSurfaceView surfaceView = new EmulatorSurfaceView(getApplicationContext(), mainContext);
-        surfaceView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        // surfaceView.setLayerType(View.LAYER_TYPE_NONE, null);
 
         setContentView(surfaceView);
     }

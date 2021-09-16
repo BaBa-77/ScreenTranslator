@@ -96,6 +96,7 @@ add_library( brewemu SHARED
         bre/ARMLegacyABI.S
 
         bre2/breStartup.c
+        bre2/breGfx.c
 
         brewappmgr/BrewAppMgr.c
         brewappmgr/BrewAppMgr.h
@@ -176,7 +177,12 @@ set_property(SOURCE bre/ARMLegacyABI.S PROPERTY LANGUAGE C)
 
 add_definitions(-DAEE_STATIC -DBREW_STATIC_APP)
 
-target_include_directories(brewemu PRIVATE "D:\\src\\BREW\\BREWPKMSM315SP02\\inc" "D:\\src\\BREW\\BREWPKMSM315SP02\\pk\\inc" "D:\\src\\BREW\\BREWPKMSM315SP02\\sdk\\inc")
+target_include_directories(brewemu PRIVATE
+        "D:\\src\\BREW\\BREWPKMSM315SP02\\inc"
+        "D:\\src\\BREW\\BREWPKMSM315SP02\\pk\\inc"
+        "D:\\src\\BREW\\BREWPKMSM315SP02\\sdk\\inc"
+        "${CMAKE_CURRENT_SOURCE_DIR}/glad")
+target_compile_options(brewemu PRIVATE -mfpu=vfpv3)
 target_link_options(brewemu PRIVATE -Wl,-z,notext -Wl,-z,muldefs -Wl,-error-limit=0)
 
 find_library( log-lib log )
@@ -205,6 +211,8 @@ target_link_libraries( brewemu
         aeeunzip
         z
         png
+        egl
+        GLESv1_CM
         ${log-lib}
         ${android-lib}
         )

@@ -9,7 +9,9 @@
 #include "AEE_OEM.h"
 #include "AEEModTable.h"
 #include "AEEStdLib.h"
+#include "../bre2/breGfx.h"
 #include "../bre2/breConfig.h"
+#include <GLES/gl.h>
 
 static boolean gbInit = 0;
 static IBitmap *gpDevBitmap = NULL;
@@ -19,6 +21,9 @@ struct IDisplayDev {
     AEEVTBL(IDisplayDev)   *pvt;
     uint32                  nRefs;
     char *framebuffer;
+    char *cvtFramebuffer;
+    GLuint texture;
+    GLuint vbo;
 };
 
 
@@ -95,7 +100,7 @@ extern int OEMDisplayDev_New(IShell * piShell, AEECLSID cls, void **ppif)
         return ENOMEMORY;
     }
 
-    ANativeWindow_setBuffersGeometry(gNativeWindow, 0, 0, AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM);
+    // ANativeWindow_setBuffersGeometry(gNativeWindow, 0, 0, AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM);
     int width = BRE_DISPLAY_CONFIG_WIDTH;// ANativeWindow_getWidth(gNativeWindow);
     int height = BRE_DISPLAY_CONFIG_HEIGHT;//ANativeWindow_getHeight(gNativeWindow);
 
@@ -103,6 +108,8 @@ extern int OEMDisplayDev_New(IShell * piShell, AEECLSID cls, void **ppif)
     pMe->nRefs = 1;
     pMe->framebuffer = malloc(width * height * 4);
     MEMSET(pMe->framebuffer, 0xFF, width * height * 4);
+    pMe->cvtFramebuffer = malloc(width * height * 4);
+    pMe->texture = 0;
 
     *ppif = pMe;
     return SUCCESS;
@@ -209,6 +216,7 @@ static uint32 OEMDisplayDev_Release(IDisplayDev *pMe)
 
     if (!nRefs) {
         free(pMe->framebuffer);
+        free(pMe->cvtFramebuffer);
 
         FREE(pMe);
     }
@@ -228,63 +236,113 @@ static int OEMDisplayDev_QueryInterface(IDisplayDev *pMe, AEECLSID clsid, void *
     return ECLASSNOTSUPPORT;
 }
 
+struct OEMDisplayDev_BufferDataStruct {
+    float x, y;
+    float u, v;
+};
+
 static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc) {
     int nativeWidth = ANativeWindow_getWidth(gNativeWindow);
     int nativeHeight = ANativeWindow_getHeight(gNativeWindow);
 
-    const int baseScalingRatio = 8192;
-    int xScalingRatio = baseScalingRatio * nativeWidth / BRE_DISPLAY_CONFIG_WIDTH;
-    int yScalingRatio = baseScalingRatio * nativeHeight / BRE_DISPLAY_CONFIG_HEIGHT;
-    int scalingRatio = xScalingRatio;
+    breGfxAcqCx();
 
-    if(yScalingRatio < xScalingRatio) {
-        scalingRatio = yScalingRatio;
+    glViewport(0, 0, nativeWidth, nativeHeight);
+
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    float xScalingRatio = (float) nativeWidth / (float) BRE_DISPLAY_CONFIG_WIDTH;
+    float yScalingRatio = (float) nativeHeight / (float) BRE_DISPLAY_CONFIG_HEIGHT;
+
+    float scalingRatio = yScalingRatio;
+    if(xScalingRatio < yScalingRatio) {
+        scalingRatio = xScalingRatio;
     }
 
-    ARect updateRect;
-    updateRect.left = prc->x * scalingRatio / baseScalingRatio;
-    updateRect.top = prc->y * scalingRatio / baseScalingRatio;
-    updateRect.right = (prc->x + prc->dx) * scalingRatio / baseScalingRatio;
-    updateRect.bottom = (prc->y + prc->dy) * scalingRatio / baseScalingRatio;
-    if(updateRect.right > nativeWidth) {
-        updateRect.right = nativeWidth;
-    }
-    if(updateRect.bottom > nativeHeight) {
-        updateRect.bottom = nativeHeight;
-    }
+    if(!pMe->texture) {
+        glGenTextures(1, &pMe->texture);
+        glBindTexture(GL_TEXTURE_2D, pMe->texture);
 
-    ANativeWindow_Buffer buffer;
-    int error_code = ANativeWindow_lock(gNativeWindow, &buffer, &updateRect);
-    if(error_code != 0) {
-        return EFAILED;
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, BRE_DISPLAY_CONFIG_WIDTH, BRE_DISPLAY_CONFIG_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     }
 
-    assert(buffer.format == AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM);
+    if(!pMe->vbo) {
+        glGenBuffers(1, &pMe->vbo);
+    }
 
-    char *outFB = (char *) buffer.bits;
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrthof(0.0f, nativeWidth, nativeHeight, 0.0f, -1.0f, 1.0f);
 
-    for(int y = updateRect.top; y < updateRect.bottom; y++) {
-        int inY = y * baseScalingRatio / scalingRatio;// * BRE_DISPLAY_CONFIG_HEIGHT / nativeHeight;
-        if(inY < 0 || inY >= BRE_DISPLAY_CONFIG_HEIGHT) continue;
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 
-        for(int x = updateRect.left; x < updateRect.right; x++) {
-            int inX = x * baseScalingRatio / scalingRatio;// * BRE_DISPLAY_CONFIG_WIDTH / nativeWidth;
-            if(inX < 0 || inX >= BRE_DISPLAY_CONFIG_WIDTH) continue;
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, pMe->texture);
 
-            int inOffset = (inX + inY * BRE_DISPLAY_CONFIG_WIDTH) * 4;
-            int outOffset = (x + y * buffer.stride) * 4;
-            char b = pMe->framebuffer[inOffset + 0];
-            char g = pMe->framebuffer[inOffset + 1];
-            char r = pMe->framebuffer[inOffset + 2];
-
-            outFB[outOffset + 0] = r;
-            outFB[outOffset + 1] = g;
-            outFB[outOffset + 2] = b;
-            outFB[outOffset + 3] = 0xFF;
+    uint32 *bufIn = (uint32 *) pMe->framebuffer;
+    uint32 *bufOut = (uint32 *) pMe->cvtFramebuffer;
+    int yboffs = prc->y * BRE_DISPLAY_CONFIG_WIDTH;
+    for(int y = 0; y < prc->dy; y++, yboffs += BRE_DISPLAY_CONFIG_WIDTH) {
+        int xboffs = prc->x + yboffs;
+        for(int x = 0; x < prc->dx; x++, xboffs++) {
+            bufOut[xboffs] = ((0xFF0000u & bufIn[xboffs]) >> 16u) | (0xFF00u & bufIn[xboffs]) | ((0xFFu & bufIn[xboffs]) << 16u);
         }
     }
 
-    ANativeWindow_unlockAndPost(gNativeWindow);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, BRE_DISPLAY_CONFIG_WIDTH, BRE_DISPLAY_CONFIG_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, pMe->cvtFramebuffer);
+    // glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, BRE_DISPLAY_CONFIG_WIDTH, BRE_DISPLAY_CONFIG_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, pMe->framebuffer);
+
+    struct OEMDisplayDev_BufferDataStruct *bdata = MALLOC(sizeof(struct OEMDisplayDev_BufferDataStruct) * 6);
+    bdata[0].x = 0.0f;
+    bdata[0].y = 0.0f;
+    bdata[0].u = 0.0f;
+    bdata[0].v = 0.0f;
+
+    bdata[1].x = 0.0f;
+    bdata[1].y = BRE_DISPLAY_CONFIG_HEIGHT * scalingRatio;
+    bdata[1].u = 0.0f;
+    bdata[1].v = 1.0f;
+
+    bdata[2].x = BRE_DISPLAY_CONFIG_WIDTH * scalingRatio;
+    bdata[2].y = 0.0f;
+    bdata[2].u = 1.0f;
+    bdata[2].v = 0.0f;
+
+    bdata[3].x = BRE_DISPLAY_CONFIG_WIDTH * scalingRatio;
+    bdata[3].y = 0.0f;
+    bdata[3].u = 1.0f;
+    bdata[3].v = 0.0f;
+
+    bdata[4].x = 0.0f;
+    bdata[4].y = BRE_DISPLAY_CONFIG_HEIGHT * scalingRatio;
+    bdata[4].u = 0.0f;
+    bdata[4].v = 1.0f;
+
+    bdata[5].x = BRE_DISPLAY_CONFIG_WIDTH * scalingRatio;
+    bdata[5].y = BRE_DISPLAY_CONFIG_HEIGHT * scalingRatio;
+    bdata[5].u = 1.0f;
+    bdata[5].v = 1.0f;
+
+    glBindBuffer(GL_ARRAY_BUFFER, pMe->vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(struct OEMDisplayDev_BufferDataStruct) * 6, bdata, GL_DYNAMIC_DRAW);
+
+    FREE(bdata);
+
+    glVertexPointer(2, GL_FLOAT, sizeof(struct OEMDisplayDev_BufferDataStruct), (const void *) offsetof(struct OEMDisplayDev_BufferDataStruct, x));
+    glTexCoordPointer(2, GL_FLOAT, sizeof(struct OEMDisplayDev_BufferDataStruct), (const void *) offsetof(struct OEMDisplayDev_BufferDataStruct, u));
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+
+    breGfxSwap();
 
     return SUCCESS;
 }

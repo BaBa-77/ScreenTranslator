@@ -21,8 +21,6 @@ extern "C" {
 
 const char *gExternalFilesDir = nullptr;
 
-ANativeWindow *gNativeWindow;
-
 static void mkdirs(const char *dir) {
     char tmp[PATH_MAX];
     char *p = NULL;
@@ -83,13 +81,16 @@ static AEECallback gCBStartLauncherApp;
 #include "bre2/breStartup.h"
 #include <cassert>
 #include <AEE_OEMEvent.h>
+#include "bre2/breGfx.h"
 
 static bool isBREWRunning = false;
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *env, jobject thiz, jobject surface) {
-    gNativeWindow = ANativeWindow_fromSurface(env, surface);
+    ANativeWindow *nativeWindow = ANativeWindow_fromSurface(env, surface);
+    breGfxInit(nativeWindow);
+    ANativeWindow_release(nativeWindow);
 
     acquireExternalFilesDir(env, thiz);
 
@@ -238,5 +239,6 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIShutdown(JNIEnv *e
     if(isBREWRunning) {
         isBREWRunning = false;
         AEE_Exit();
+        breGfxDestroy();
     }
 }
