@@ -9,6 +9,7 @@ extern "C" {
 #undef EALREADY
 }
 
+#include "bre2/breConfig.h"
 #include <jni.h>
 #include <string>
 #include <sys/stat.h>
@@ -83,6 +84,8 @@ static AEECallback gCBStartLauncherApp;
 #include <cassert>
 #include <AEE_OEMEvent.h>
 
+static bool isBREWRunning = false;
+
 extern "C"
 JNIEXPORT void JNICALL
 Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *env, jobject thiz, jobject surface) {
@@ -90,6 +93,7 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *en
 
     acquireExternalFilesDir(env, thiz);
 
+#ifdef BRE_ENABLE_PLATFORM_DEBUG
     AEEREGISTRY_EnableDebugMsg(1);
     AEENOTIFY_EnableDebugMsg(1);
     AEEMIFPROP_EnableDebugMsg(1);
@@ -108,6 +112,7 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *en
     AEEDBGKEY_EnableDebugMsg(1);
     AEEFREEMEM_EnableDebugMsg(1);
     AEESTACK_EnableDebugMsg(1);
+#endif
 
     IShell *pIShell = AEE_Init(0);
     if(pIShell) {
@@ -116,10 +121,7 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *en
         __android_log_print(ANDROID_LOG_INFO, "BREWEmulatorAndroid", "AEE Initialization failed");
     }
 
-    // AEE_EnterAppContext(NULL);
-    // StartLauncherApp(NULL);
-    // CALLBACK_Init(&gCBStartLauncherApp, StartLauncherApp, NULL);
-    // AEE_ResumeCallback(&gCBStartLauncherApp,0);
+    isBREWRunning = true;
 }
 
 AVKType translateKeycode(jint keyCode) {
@@ -228,4 +230,13 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyDown(JNIEnv *env, 
     AEE_Key(avk);
     AEE_KeyPress(avk);
     return true;
+}
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIShutdown(JNIEnv *env, jobject thiz) {
+    if(isBREWRunning) {
+        isBREWRunning = false;
+        AEE_Exit();
+    }
 }

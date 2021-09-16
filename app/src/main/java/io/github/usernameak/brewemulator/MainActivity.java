@@ -37,8 +37,16 @@ public class MainActivity extends Activity {
         return brewEmuKeyDown(keyCode);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        brewEmuJNIShutdown();
+    }
+
     public native boolean brewEmuKeyUp(int keyCode);
     public native boolean brewEmuKeyDown(int keyCode);
 
     public native void brewEmuJNIStartup(Surface surface);
+    public native void brewEmuJNIShutdown();
 }
