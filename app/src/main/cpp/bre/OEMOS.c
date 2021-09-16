@@ -30,7 +30,7 @@ int OEMOS_HandleTimer(int fd, int events, void *data) {
 }
 
 int16 OEMOS_InitLayer() {
-    oemos_timer = syscall(SYS_timerfd_create, CLOCK_MONOTONIC, 0);
+    oemos_timer = syscall(SYS_timerfd_create, CLOCK_MONOTONIC, 04000);
     if(oemos_timer < 0) {
         return EFAILED;
     }

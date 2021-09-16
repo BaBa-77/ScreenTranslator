@@ -12,7 +12,7 @@ PUBLIC CLASSES:  Not Applicable
 
 INITIALIZATION AND SEQUENCING REQUIREMENTS:  Not Applicable
 
-        Copyright © 1999-2002 QUALCOMM Incorporated.
+        Copyright ï¿½ 1999-2002 QUALCOMM Incorporated.
                All Rights Reserved.
             QUALCOMM Proprietary/GTDR
 ===========================================================================*/

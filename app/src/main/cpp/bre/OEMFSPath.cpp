@@ -21,7 +21,7 @@ static const OEMFSGNPMap gapmBrewToOEM[] = {
         { AEEFS_MIF_DIR, "mif", TRUE },
         { AEEFS_ADDRESS_DIR, "address", TRUE },
         { AEEFS_SHARED_DIR, "shared", TRUE },
-        { AEEFS_ROOT_DIR, "root", TRUE },
+        { AEEFS_ROOT_DIR, "", TRUE },
         { nullptr, nullptr, 0 },
 };
 
