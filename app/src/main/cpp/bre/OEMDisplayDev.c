@@ -228,18 +228,24 @@ static int OEMDisplayDev_QueryInterface(IDisplayDev *pMe, AEECLSID clsid, void *
     return ECLASSNOTSUPPORT;
 }
 
-static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc)
-{
-    // DBGPRINTF("OEMDisplayDev_Update");
+static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc) {
+    int nativeWidth = ANativeWindow_getWidth(gNativeWindow);
+    int nativeHeight = ANativeWindow_getHeight(gNativeWindow);
 
-    ANativeWindow_Buffer buffer;
+    const int baseScalingRatio = 8192;
+    int xScalingRatio = baseScalingRatio * nativeWidth / BRE_DISPLAY_CONFIG_WIDTH;
+    int yScalingRatio = baseScalingRatio * nativeHeight / BRE_DISPLAY_CONFIG_HEIGHT;
+    int scalingRatio = xScalingRatio;
+
+    if(yScalingRatio < xScalingRatio) {
+        scalingRatio = yScalingRatio;
+    }
+
     ARect updateRect;
-    updateRect.left = prc->x;
-    updateRect.top = prc->y;
-    updateRect.right = prc->x + prc->dx;
-    updateRect.bottom = prc->y + prc->dy;
-
-    int nativeWidth = ANativeWindow_getWidth(gNativeWindow), nativeHeight = ANativeWindow_getHeight(gNativeWindow);
+    updateRect.left = prc->x * scalingRatio / baseScalingRatio;
+    updateRect.top = prc->y * scalingRatio / baseScalingRatio;
+    updateRect.right = (prc->x + prc->dx) * scalingRatio / baseScalingRatio;
+    updateRect.bottom = (prc->y + prc->dy) * scalingRatio / baseScalingRatio;
     if(updateRect.right > nativeWidth) {
         updateRect.right = nativeWidth;
     }
@@ -247,6 +253,7 @@ static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc)
         updateRect.bottom = nativeHeight;
     }
 
+    ANativeWindow_Buffer buffer;
     int error_code = ANativeWindow_lock(gNativeWindow, &buffer, &updateRect);
     if(error_code != 0) {
         return EFAILED;
@@ -256,23 +263,23 @@ static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc)
 
     char *outFB = (char *) buffer.bits;
 
-    // pMe->framebuffer[0] = 255;
-    // pMe->framebuffer[1] = 255;
-    // pMe->framebuffer[2] = 255;
+    for(int y = updateRect.top; y < updateRect.bottom; y++) {
+        int inY = y * baseScalingRatio / scalingRatio;// * BRE_DISPLAY_CONFIG_HEIGHT / nativeHeight;
+        if(inY < 0 || inY >= BRE_DISPLAY_CONFIG_HEIGHT) continue;
 
-    // MEMSET(pMe->framebuffer, 0xFF, buffer.width * 4 * 5);
+        for(int x = updateRect.left; x < updateRect.right; x++) {
+            int inX = x * baseScalingRatio / scalingRatio;// * BRE_DISPLAY_CONFIG_WIDTH / nativeWidth;
+            if(inX < 0 || inX >= BRE_DISPLAY_CONFIG_WIDTH) continue;
 
-    for(int x = updateRect.left; x < updateRect.right && x < BRE_DISPLAY_CONFIG_WIDTH; x++) {
-        for(int y = updateRect.top; y < updateRect.bottom && y < BRE_DISPLAY_CONFIG_HEIGHT; y++) {
-            int inOffset = (x + y * BRE_DISPLAY_CONFIG_WIDTH) * 4;
+            int inOffset = (inX + inY * BRE_DISPLAY_CONFIG_WIDTH) * 4;
             int outOffset = (x + y * buffer.stride) * 4;
-            char r = pMe->framebuffer[inOffset + 0];
+            char b = pMe->framebuffer[inOffset + 0];
             char g = pMe->framebuffer[inOffset + 1];
-            char b = pMe->framebuffer[inOffset + 2];
+            char r = pMe->framebuffer[inOffset + 2];
 
-            outFB[outOffset + 0] = b;
+            outFB[outOffset + 0] = r;
             outFB[outOffset + 1] = g;
-            outFB[outOffset + 2] = r;
+            outFB[outOffset + 2] = b;
             outFB[outOffset + 3] = 0xFF;
         }
     }
