@@ -64,6 +64,9 @@ set_property(TARGET aeeunzip PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_D
 add_library(aeebci STATIC IMPORTED)
 set_property(TARGET aeebci PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/aeebci.fixed.lib)
 
+add_library(aeedb STATIC IMPORTED)
+set_property(TARGET aeedb PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/aeedb.fixed.lib)
+
 add_library(z STATIC IMPORTED)
 set_property(TARGET z PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/z.fixed.lib)
 
@@ -122,6 +125,7 @@ add_library( brewemu SHARED
         OEMBitmap_common.c
         OEMBitmap_generic.h
         OEMBitmap_priv.h
+        OEMBitmap16.c
         OEMBitmap24.c
         OEMBitmapFuncs_priv.h
         OEMCallHistory.c
@@ -209,6 +213,7 @@ target_link_libraries( brewemu
         aeemm
         aeetapi
         aeeunzip
+        aeedb
         z
         png
         egl

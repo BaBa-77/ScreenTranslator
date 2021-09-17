@@ -22,6 +22,10 @@
 #define OEMDISP
 #endif
 
+#if !defined(OEMDB)
+#define OEMDB
+#endif
+
 #define AEEMENU_LIB     1
 #define AEECONTROLS_LIB 1
 
@@ -53,6 +57,9 @@
 #define FEATURE_BCI_DECODE
 #define FEATURE_APP_MANAGER
 #define FEATURE_SOUNDPLAYER
+#define FEATURE_BREW_SPRITE
+#define FEATURE_BREW_APPFRAME
+#define AEEDB_LIB
 
 #define FEATURE_DYNAMIC_OEM_HEAP
 

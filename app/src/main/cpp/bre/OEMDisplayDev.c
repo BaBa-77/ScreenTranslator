@@ -21,7 +21,6 @@ struct IDisplayDev {
     AEEVTBL(IDisplayDev)   *pvt;
     uint32                  nRefs;
     char *framebuffer;
-    char *cvtFramebuffer;
     GLuint texture;
     GLuint vbo;
 };
@@ -106,9 +105,8 @@ extern int OEMDisplayDev_New(IShell * piShell, AEECLSID cls, void **ppif)
 
     pMe->pvt = (AEEVTBL(IDisplayDev) *)&gOEMDisplayDevFuncs;
     pMe->nRefs = 1;
-    pMe->framebuffer = malloc(width * height * 4);
-    MEMSET(pMe->framebuffer, 0xFF, width * height * 4);
-    pMe->cvtFramebuffer = malloc(width * height * 4);
+    pMe->framebuffer = malloc(width * height * 2);
+    MEMSET(pMe->framebuffer, 0xFF, width * height * 2);
     pMe->texture = 0;
 
     *ppif = pMe;
@@ -135,10 +133,10 @@ extern int OEMBitmapDev_New(IShell * piShell, AEECLSID cls, void **ppif)
             return nErr;
         }
 
-        int width = BRE_DISPLAY_CONFIG_WIDTH;//ANativeWindow_getWidth(gNativeWindow);
-        int height = BRE_DISPLAY_CONFIG_HEIGHT;//ANativeWindow_getHeight(gNativeWindow);
+        int width = BRE_DISPLAY_CONFIG_WIDTH;
+        int height = BRE_DISPLAY_CONFIG_HEIGHT;
 
-        nErr = OEMBitmap24_NewEx(width, height, pDispDev->framebuffer, NULL, pDispDev, (IBitmap**)ppif);
+        nErr = OEMBitmap16_NewEx(width, height, pDispDev->framebuffer, NULL, pDispDev, (IBitmap**)ppif);
         if (SUCCESS != nErr) {
             goto Error;
         }
@@ -177,7 +175,7 @@ extern int OEMBitmapDevChild_New(IShell * piShell, AEECLSID cls, void **ppif)
         return nErr;
     }
 
-    nErr = OEMBitmap24_New_Child(pDevBitmap, NULL, (IBitmap**)ppif);
+    nErr = OEMBitmap16_New_Child(pDevBitmap, NULL, (IBitmap**)ppif);
     if (SUCCESS != nErr) {
         goto Error;
     }
@@ -216,7 +214,6 @@ static uint32 OEMDisplayDev_Release(IDisplayDev *pMe)
 
     if (!nRefs) {
         free(pMe->framebuffer);
-        free(pMe->cvtFramebuffer);
 
         FREE(pMe);
     }
@@ -264,7 +261,7 @@ static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc)
         glGenTextures(1, &pMe->texture);
         glBindTexture(GL_TEXTURE_2D, pMe->texture);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, BRE_DISPLAY_CONFIG_WIDTH, BRE_DISPLAY_CONFIG_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, BRE_DISPLAY_CONFIG_WIDTH, BRE_DISPLAY_CONFIG_HEIGHT, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -286,18 +283,7 @@ static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc)
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, pMe->texture);
 
-    uint32 *bufIn = (uint32 *) pMe->framebuffer;
-    uint32 *bufOut = (uint32 *) pMe->cvtFramebuffer;
-    int yboffs = prc->y * BRE_DISPLAY_CONFIG_WIDTH;
-    for(int y = 0; y < prc->dy; y++, yboffs += BRE_DISPLAY_CONFIG_WIDTH) {
-        int xboffs = prc->x + yboffs;
-        for(int x = 0; x < prc->dx; x++, xboffs++) {
-            bufOut[xboffs] = ((0xFF0000u & bufIn[xboffs]) >> 16u) | (0xFF00u & bufIn[xboffs]) | ((0xFFu & bufIn[xboffs]) << 16u);
-        }
-    }
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, BRE_DISPLAY_CONFIG_WIDTH, BRE_DISPLAY_CONFIG_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, pMe->cvtFramebuffer);
-    // glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, BRE_DISPLAY_CONFIG_WIDTH, BRE_DISPLAY_CONFIG_HEIGHT, GL_RGBA, GL_UNSIGNED_BYTE, pMe->framebuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, BRE_DISPLAY_CONFIG_WIDTH, BRE_DISPLAY_CONFIG_HEIGHT, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, pMe->framebuffer);
 
     struct OEMDisplayDev_BufferDataStruct *bdata = MALLOC(sizeof(struct OEMDisplayDev_BufferDataStruct) * 6);
     bdata[0].x = 0.0f;
