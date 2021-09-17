@@ -199,10 +199,12 @@ AVKType translateKeycode(jint keyCode) {
             avk = AVK_9; break;
 
         case AKEYCODE_STAR:
+        case AKEYCODE_S:
         case AKEYCODE_NUMPAD_MULTIPLY:
             avk = AVK_STAR; break;
 
         case AKEYCODE_POUND:
+        case AKEYCODE_D:
         case AKEYCODE_NUMPAD_DIVIDE:
             avk = AVK_POUND; break;
     }

@@ -11,9 +11,9 @@ DESCRIPTION
    to all OEMLogger implmentations
 
 
-        Copyright © 1999-2006 QUALCOMM Incorporated.
+        Copyright ï¿½ 1999-2006 QUALCOMM Incorporated.
                All Rights Reserved.
-            QUALCOMM Proprietary/GTDR
+            QUALCOMM Proprietary/GTDR_
 =============================================================================*/
 #include "OEMFeatures.h"
 #ifdef FEATURE_LOGGER
