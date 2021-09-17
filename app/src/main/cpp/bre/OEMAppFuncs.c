@@ -148,6 +148,12 @@ int OEM_GetConfig(AEEConfigItem i, void * pBuff, int nSize)
 
             return SUCCESS;
         }
+        case CFGI_LNG: {
+            if(nSize < sizeof(uint32))
+                return EBADPARM;
+            *(uint32*)pBuff = LNG_ENGLISH;
+            return SUCCESS;
+        }
     }
     return EUNSUPPORTED;
 }
@@ -225,6 +231,60 @@ int OEM_GetDeviceInfoEx(AEEDeviceItem nItem, void *pBuff, int *pnSize) {
 
             MEMCPY(pBuff, gSystemColors, nSize);
 
+            return SUCCESS;
+        }
+        case AEE_DEVICEITEM_SOFTKEY_COUNT:
+        {
+            if (!pnSize)
+                return(EBADPARM);
+
+            if (!pBuff || *pnSize < sizeof(uint8)) {
+                *pnSize = sizeof(uint8);
+                return(SUCCESS);
+            }
+
+            *((uint8 *)pBuff) = 2;
+            return(SUCCESS);
+        }
+        case AEE_DEVICEITEM_DISPINFO1:
+        {
+            AEEBitmapInfo  bi;
+            AEEDeviceInfo  di;
+            int            nSize;
+
+            if(!pnSize)
+                return(EBADPARM);
+
+            nSize = MIN(*pnSize, (int)sizeof(AEEBitmapInfo));
+            *pnSize = sizeof(AEEBitmapInfo);
+
+            if (!pBuff) {
+                return(SUCCESS);
+            }
+
+            OEM_GetDeviceInfo(&di);
+            bi.cx = di.cxScreen;
+            bi.cy = di.cyScreen;
+            bi.nDepth = di.nColorDepth;
+
+//lint -save -e611 -e740  Suppress complaint about pointer casts
+            MEMCPY(pBuff, &bi, (uint32)nSize);
+//lint -restore
+
+            return SUCCESS;
+        }
+        case AEE_DEVICEITEM_MANNER_MODE:
+        {
+            if (!pnSize)
+                return EBADPARM;
+
+            if (!pBuff || *pnSize < sizeof(uint32))
+            {
+                *pnSize = sizeof(uint32);
+                return(SUCCESS);
+            }
+            *((uint32 *)pBuff) = (uint32)AEE_MANNER_MODE_NORMAL;
+            *pnSize = sizeof(uint32);
             return SUCCESS;
         }
     }

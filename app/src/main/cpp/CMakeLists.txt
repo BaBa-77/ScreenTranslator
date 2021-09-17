@@ -178,9 +178,9 @@ set_property(SOURCE bre/ARMLegacyABI.S PROPERTY LANGUAGE C)
 add_definitions(-DAEE_STATIC -DBREW_STATIC_APP)
 
 target_include_directories(brewemu PRIVATE
-        "D:\\src\\BREW\\BREWPKMSM315SP02\\inc"
-        "D:\\src\\BREW\\BREWPKMSM315SP02\\pk\\inc"
-        "D:\\src\\BREW\\BREWPKMSM315SP02\\sdk\\inc"
+        "$ENV{BREWPK}\\..\\inc"
+        "$ENV{BREWPK}\\inc"
+        "$ENV{BREWPK}\\..\\sdk\\inc"
         "${CMAKE_CURRENT_SOURCE_DIR}/glad")
 target_compile_options(brewemu PRIVATE -mfpu=vfpv3)
 target_link_options(brewemu PRIVATE -Wl,-z,notext -Wl,-z,muldefs -Wl,-error-limit=0)
