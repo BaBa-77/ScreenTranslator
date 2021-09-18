@@ -5,8 +5,8 @@ extern "C" {
 
 #include "OEMFSPath_priv.h"
 
-#include <filesystem>
 #include <climits>
+#include <string>
 #include "../brewemu.h"
 
 typedef struct OEMFSGNPMap {
@@ -26,8 +26,6 @@ static const OEMFSGNPMap gapmBrewToOEM[] = {
 };
 
 uint16 OEMFS_GetMaxPathLength(void) {
-    namespace fs = std::filesystem;
-
     const OEMFSGNPMap *ppm;
     uint16 uMaxPath;
 
@@ -36,9 +34,9 @@ uint16 OEMFS_GetMaxPathLength(void) {
             continue;
         }
 
-        fs::path extFilesPath(gExternalFilesDir);
-        fs::path fullPath = extFilesPath / ppm->cpszOEM;
-        uint16 uLen = PATH_MAX - (fullPath.native().size()+1) + strlen(ppm->cpszBREW);
+        std::string extFilesPath(gExternalFilesDir);
+        std::string fullPath = extFilesPath + '/' + ppm->cpszOEM;
+        uint16 uLen = PATH_MAX - (fullPath.size()+1) + strlen(ppm->cpszBREW);
 
         uMaxPath = MAX(uLen, uMaxPath);
     }
@@ -48,8 +46,6 @@ uint16 OEMFS_GetMaxPathLength(void) {
 
 boolean OEMFS_IsAutoCreate(const char *cpszIn)
 {
-    namespace fs = std::filesystem;
-
     const OEMFSGNPMap *ppm;
 
     for (ppm = gapmBrewToOEM; (char *)0 != ppm->cpszBREW; ppm++) {
@@ -58,8 +54,8 @@ boolean OEMFS_IsAutoCreate(const char *cpszIn)
         if ((char *)0 == ppm->cpszOEM) {
             continue;
         }
-        fs::path extFilesPath(gExternalFilesDir);
-        fs::path fullPath = extFilesPath / ppm->cpszOEM;
+        std::string extFilesPath(gExternalFilesDir);
+        std::string fullPath = extFilesPath + '/' + ppm->cpszOEM;
         cpszTail = SPLITPATH(cpszIn,fullPath.c_str());
 
         if ((char *)0 != cpszTail && '\0' == cpszTail[0]) {
@@ -71,8 +67,6 @@ boolean OEMFS_IsAutoCreate(const char *cpszIn)
 }
 
 int OEMFS_GetNativePath(const char *cpszIn, char *pszOut, int *pnOutLen) {
-    namespace fs = std::filesystem;
-
     int nErr = EBADFILENAME;
 
     for (const OEMFSGNPMap *ppm = gapmBrewToOEM; ppm->cpszBREW; ppm++) {
@@ -80,13 +74,12 @@ int OEMFS_GetNativePath(const char *cpszIn, char *pszOut, int *pnOutLen) {
 
         if (cpszTail) {
             if (ppm->cpszOEM) { /* path explicitly unsupported */
-                fs::path extFilesPath(gExternalFilesDir);
-                fs::path fullPath = extFilesPath / ppm->cpszOEM / cpszTail;
+                std::string extFilesPath(gExternalFilesDir);
+                std::string fullPath = extFilesPath + '/' + ppm->cpszOEM + '/' + cpszTail;
 
-                const std::string &fullPathN = fullPath.native();
-                const char *fullPathStr = fullPathN.c_str();
+                const char *fullPathStr = fullPath.c_str();
 
-                *pnOutLen = fullPathN.size() + 1;
+                *pnOutLen = fullPath.size() + 1;
 
                 if (pszOut) {
                     strcpy(pszOut, fullPathStr);

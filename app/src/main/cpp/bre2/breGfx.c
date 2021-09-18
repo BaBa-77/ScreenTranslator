@@ -9,6 +9,16 @@ ANativeWindow *gNativeWindow;
 static EGLDisplay gEglDpy;
 static EGLSurface gEglSurface;
 static EGLContext gEglCx;
+static EGLConfig gEglConfig;
+static const EGLint gEglAttribs[] = {
+        EGL_RED_SIZE, 8,
+        EGL_GREEN_SIZE, 8,
+        EGL_BLUE_SIZE, 8,
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
+        EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+        EGL_TRANSPARENT_TYPE, EGL_NONE,
+        EGL_NONE
+};
 
 void breGfxInit(ANativeWindow *win) {
     ANativeWindow_acquire(win);
@@ -22,19 +32,11 @@ void breGfxInit(ANativeWindow *win) {
 
     assert(eglBindAPI(EGL_OPENGL_ES_API));
 
-    EGLint attributes[] = {
-            EGL_RED_SIZE, 8,
-            EGL_GREEN_SIZE, 8,
-            EGL_BLUE_SIZE, 8,
-            EGL_NONE
-    };
-
-    EGLConfig eConfig;
     EGLint numConfig;
-    assert(eglChooseConfig(gEglDpy, attributes, &eConfig, 1, &numConfig));
+    assert(eglChooseConfig(gEglDpy, gEglAttribs, &gEglConfig, 1, &numConfig));
     assert(numConfig > 0);
 
-    gEglSurface = eglCreateWindowSurface(gEglDpy, eConfig, gNativeWindow, NULL);
+    gEglSurface = eglCreateWindowSurface(gEglDpy, gEglConfig, gNativeWindow, NULL);
     assert(gEglSurface);
 
     EGLint cxAttribs[] = {
@@ -42,7 +44,7 @@ void breGfxInit(ANativeWindow *win) {
             EGL_NONE
     };
 
-    gEglCx = eglCreateContext(gEglDpy, eConfig, EGL_NO_CONTEXT, cxAttribs);
+    gEglCx = eglCreateContext(gEglDpy, gEglConfig, EGL_NO_CONTEXT, cxAttribs);
     assert(gEglCx);
 
     // eglMakeCurrent(gEglDpy, gEglCx)
@@ -52,6 +54,13 @@ void breGfxInit(ANativeWindow *win) {
 
 void breGfxAcqCx() {
     assert(eglMakeCurrent(gEglDpy, gEglSurface, gEglSurface, gEglCx));
+    if(eglGetError() == EGL_BAD_SURFACE) {
+        eglDestroySurface(gEglDpy, gEglSurface);
+        gEglSurface = eglCreateWindowSurface(gEglDpy, gEglConfig, gNativeWindow, NULL);
+        assert(gEglSurface);
+
+        assert(eglMakeCurrent(gEglDpy, gEglSurface, gEglSurface, gEglCx));
+    }
 }
 
 void breGfxRelCx() {

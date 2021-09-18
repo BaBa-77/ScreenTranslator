@@ -70,11 +70,15 @@ set_property(TARGET aeedb PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}
 add_library(z STATIC IMPORTED)
 set_property(TARGET z PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/z.fixed.lib)
 
+add_library(aeeaddrbk STATIC IMPORTED)
+set_property(TARGET aeeaddrbk PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/aeeaddrbk.fixed.lib)
+
 add_library( brewemu SHARED
         brewemu.cpp
         brewemu.h
         breABI.c
 
+        bre/AEENet.c
         bre/OEMRan.c
         bre/OEMOS.c
         bre/OEMMutex.c
@@ -97,7 +101,9 @@ add_library( brewemu SHARED
         bre/OEMTAPI.c
         bre/OEMSysClock.c
         bre/ARMLegacyABI.S
+        bre/OEMAddrBook.c
 
+        bre2/breMockSignature.c
         bre2/breStartup.c
         bre2/breGfx.c
 
@@ -214,6 +220,7 @@ target_link_libraries( brewemu
         aeetapi
         aeeunzip
         aeedb
+        aeeaddrbk
         z
         png
         egl

@@ -82,6 +82,7 @@ static AEECallback gCBStartLauncherApp;
 #include <cassert>
 #include <AEE_OEMEvent.h>
 #include "bre2/breGfx.h"
+#include "bre2/breMockSignature.h"
 
 static bool isBREWRunning = false;
 
@@ -91,6 +92,8 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *en
     ANativeWindow *nativeWindow = ANativeWindow_fromSurface(env, surface);
     breGfxInit(nativeWindow);
     ANativeWindow_release(nativeWindow);
+
+    breHookSignatureVerification();
 
     acquireExternalFilesDir(env, thiz);
 
@@ -140,6 +143,7 @@ AVKType translateKeycode(jint keyCode) {
         case AKEYCODE_CLEAR:
         case AKEYCODE_ESCAPE:
         case AKEYCODE_C:
+        case AKEYCODE_DEL:
             avk = AVK_CLR; break;
 
         case AKEYCODE_MENU:

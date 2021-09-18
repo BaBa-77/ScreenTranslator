@@ -1083,16 +1083,20 @@ static char FSToBrewAttrib(uint16 dwAttrib)
         attrib = AEE_FA_NORMAL;
     }
 
+    // attrib |= AEE_FA_CONST;
+
     return attrib;
 }
 
 static char OEMFS_MapAttrib(int fattrib)
 {
-    // Read only files...
+    char attrib = AEE_FA_NORMAL;
 
     if (fattrib == FS_FA_READONLY) {
-        return AEE_FA_READONLY;
+        attrib = AEE_FA_READONLY;
     }
 
-    return AEE_FA_NORMAL;
+    // attrib |= AEE_FA_CONST;
+
+    return attrib;
 }

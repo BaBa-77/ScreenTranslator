@@ -238,6 +238,8 @@ struct OEMDisplayDev_BufferDataStruct {
     float u, v;
 };
 
+static uint32 gLastFrameDrawTime = 0;
+
 static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc) {
     int nativeWidth = ANativeWindow_getWidth(gNativeWindow);
     int nativeHeight = ANativeWindow_getHeight(gNativeWindow);
@@ -328,7 +330,17 @@ static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc)
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
+    if(BRE_DISPLAY_CONFIG_FRAMES) {
+        uint32 time = GETUPTIMEMS();
+        uint32 gNextFrameDrawTime = gLastFrameDrawTime + (1000 / BRE_DISPLAY_CONFIG_FRAMES);
+        if (time < gNextFrameDrawTime) {
+            MSLEEP(gNextFrameDrawTime - time);
+        }
+        gLastFrameDrawTime = GETUPTIMEMS();
+    }
+
     breGfxSwap();
+
 
     return SUCCESS;
 }
