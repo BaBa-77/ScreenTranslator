@@ -16,13 +16,10 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // getActionBar().hide();
-
         EmulatorMainContext mainContext = new EmulatorMainContext();
         mainContext.mainActivity = this;
 
         EmulatorSurfaceView surfaceView = new EmulatorSurfaceView(getApplicationContext(), mainContext);
-        // surfaceView.setLayerType(View.LAYER_TYPE_NONE, null);
 
         setContentView(surfaceView);
     }

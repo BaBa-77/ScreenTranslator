@@ -74,8 +74,6 @@ add_library(aeeaddrbk STATIC IMPORTED)
 set_property(TARGET aeeaddrbk PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/aeeaddrbk.fixed.lib)
 
 add_library( brewemu SHARED
-        brewemu.cpp
-        brewemu.h
         breABI.c
 
         bre/AEENet.c
@@ -106,6 +104,8 @@ add_library( brewemu SHARED
         bre2/breMockSignature.c
         bre2/breStartup.c
         bre2/breGfx.c
+        bre2/brewemu.cpp
+        bre2/brewemu.h
 
         brewappmgr/BrewAppMgr.c
         brewappmgr/BrewAppMgr.h

@@ -9,7 +9,7 @@ extern "C" {
 #undef EALREADY
 }
 
-#include "bre2/breConfig.h"
+#include "breConfig.h"
 #include <jni.h>
 #include <string>
 #include <sys/stat.h>
@@ -78,21 +78,17 @@ extern "C" void AEESTACK_EnableDebugMsg(int enable);
 
 static AEECallback gCBStartLauncherApp;
 
-#include "bre2/breStartup.h"
+#include "breStartup.h"
 #include <cassert>
 #include <AEE_OEMEvent.h>
-#include "bre2/breGfx.h"
-#include "bre2/breMockSignature.h"
+#include "breGfx.h"
+#include "breMockSignature.h"
 
 static bool isBREWRunning = false;
 
 extern "C"
 JNIEXPORT void JNICALL
 Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *env, jobject thiz, jobject surface) {
-    ANativeWindow *nativeWindow = ANativeWindow_fromSurface(env, surface);
-    breGfxInit(nativeWindow);
-    ANativeWindow_release(nativeWindow);
-
     breHookSignatureVerification();
 
     acquireExternalFilesDir(env, thiz);
@@ -245,6 +241,6 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIShutdown(JNIEnv *e
     if(isBREWRunning) {
         isBREWRunning = false;
         AEE_Exit();
-        breGfxDestroy();
+        // breGfxDestroy();
     }
 }

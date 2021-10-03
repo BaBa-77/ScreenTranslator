@@ -6,8 +6,6 @@ extern "C" {
 
 struct ANativeWindow;
 
-void breGfxInit(struct ANativeWindow *win);
-void breGfxDestroy();
 void breGfxAcqCx();
 void breGfxRelCx();
 void breGfxSwap();

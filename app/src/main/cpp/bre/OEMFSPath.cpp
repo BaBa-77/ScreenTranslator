@@ -7,7 +7,7 @@ extern "C" {
 
 #include <climits>
 #include <string>
-#include "../brewemu.h"
+#include "../bre2/brewemu.h"
 
 typedef struct OEMFSGNPMap {
     const char *cpszBREW;

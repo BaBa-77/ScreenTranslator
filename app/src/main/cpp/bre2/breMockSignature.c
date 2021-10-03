@@ -25,7 +25,7 @@ int SIG_GetMIFInfo(char *modDir, unsigned int *tagSize, boolean *testEnable, cha
 
 static void *
 breSIG_VerifyFile(IFileMgr *fileMgr, const char *unk1, const char *filePath, int prefixBytes,
-                  int unk4, int *errCode) {
+                  int doAutoLoad, int *errCode) {
     IFile *file = NULL;
     dword modSize;
     {
@@ -53,7 +53,7 @@ breSIG_VerifyFile(IFileMgr *fileMgr, const char *unk1, const char *filePath, int
     char *fullData = (char *) AEEHeap_Malloc(modSize + prefixBytes);
     char *modData = fullData + prefixBytes;
 
-    if (unk4) {
+    if (doAutoLoad) {
         file = IFILEMGR_OpenFile(fileMgr, filePath, _OFM_READ);
         if (!file) {
             *errCode = SIG_FILE_MISSING;
@@ -88,7 +88,7 @@ int breSIG_GetMIFInfo(char *modDir, unsigned int *tagSize, boolean *testEnable, 
     if(tagSize) {
         *tagSize = 4;
     }
-    
+
     return SUCCESS;
 }
 

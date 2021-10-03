@@ -1,11 +1,12 @@
 package io.github.usernameak.brewemulator;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.PixelFormat;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+@SuppressLint("ViewConstructor")
 public class EmulatorSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
     private final EmulatorMainContext emulatorMainContext;
 
@@ -17,20 +18,33 @@ public class EmulatorSurfaceView extends SurfaceView implements SurfaceHolder.Ca
         getHolder().addCallback(this);
     }
 
+    private native void nSurfaceCreated(Surface surface);
+    private native void nSurfaceChanged();
+    private native void nSurfaceDestroyed(Surface surface);
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         System.out.println("surfaceCreated");
-        emulatorMainContext.surfaceHolder = holder;
         emulatorMainContext.surface = holder.getSurface();
+
+        nSurfaceCreated(holder.getSurface());
 
         emulatorMainContext.checkInitialized();
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder surfaceHolder, int format, int width, int height) {
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        System.out.println("surfaceChanged");
+
+        nSurfaceChanged();
+        // nSurfaceDestroyed(holder.getSurface());
+        // nSurfaceCreated(holder.getSurface());
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
+        System.out.println("surfaceDestroyed");
+
+        nSurfaceDestroyed(holder.getSurface());
     }
 }

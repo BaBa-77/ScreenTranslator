@@ -1,5 +1,5 @@
 #include <android/native_window.h>
-#include "../brewemu.h"
+#include "../bre2/brewemu.h"
 #include "assert.h"
 
 #undef EFAILED
@@ -25,6 +25,7 @@ struct IDisplayDev {
     GLuint vbo;
 };
 
+static IDisplayDev *gOEMDisplayDev = NULL;
 
 static void OEMBitmapDev_Init(IShell *ps);
 static void OEMBitmapDev_Cleanup(void *pData);
@@ -94,6 +95,11 @@ extern int OEMDisplayDev_New(IShell * piShell, AEECLSID cls, void **ppif)
         return ECLASSNOTSUPPORT;
     }
 
+    if(gOEMDisplayDev) {
+        *ppif = gOEMDisplayDev;
+        return SUCCESS;
+    }
+
     pMe = (IDisplayDev*)MALLOC(sizeof(IDisplayDev));
     if (NULL == pMe) {
         return ENOMEMORY;
@@ -110,6 +116,7 @@ extern int OEMDisplayDev_New(IShell * piShell, AEECLSID cls, void **ppif)
     pMe->texture = 0;
 
     *ppif = pMe;
+    gOEMDisplayDev = pMe;
     return SUCCESS;
 }
 
@@ -240,7 +247,11 @@ struct OEMDisplayDev_BufferDataStruct {
 
 static uint32 gLastFrameDrawTime = 0;
 
-static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc) {
+int breOemDpyUpdate() {
+    IDisplayDev *pMe = gOEMDisplayDev;
+
+    if(!pMe) return SUCCESS;
+
     int nativeWidth = ANativeWindow_getWidth(gNativeWindow);
     int nativeHeight = ANativeWindow_getHeight(gNativeWindow);
 
@@ -343,5 +354,13 @@ static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc)
 
 
     return SUCCESS;
+}
+
+static int OEMDisplayDev_Update(IDisplayDev *pMe, IBitmap *pbmSrc, AEERect *prc) {
+    if(pMe != gOEMDisplayDev) {
+        return EUNSUPPORTED;
+    }
+
+    return breOemDpyUpdate();
 }
 

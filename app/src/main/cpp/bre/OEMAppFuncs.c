@@ -161,7 +161,7 @@ int OEM_GetConfig(AEEConfigItem i, void * pBuff, int nSize)
 void OEM_SetBAM_ADSAccount(void) {
 }
 
-#include "../brewemu.h"
+#include "../bre2/brewemu.h"
 #include <android/native_window.h>
 
 void OEM_GetDeviceInfo(AEEDeviceInfo * pi) {

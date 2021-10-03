@@ -10,7 +10,6 @@ import android.view.SurfaceView;
 
 public class EmulatorMainContext {
     public Surface surface;
-    public SurfaceHolder surfaceHolder;
     public MainActivity mainActivity;
     public boolean running = false;
 
