@@ -101,11 +101,16 @@ add_library( brewemu SHARED
         bre/ARMLegacyABI.S
         bre/OEMAddrBook.c
 
+        bre2/breConfig.c
+        bre2/breConfig.h
+        bre2/toml.c
+        bre2/toml.h
         bre2/breMockSignature.c
         bre2/breStartup.c
         bre2/breGfx.c
         bre2/brewemu.cpp
         bre2/brewemu.h
+
 
         brewappmgr/BrewAppMgr.c
         brewappmgr/BrewAppMgr.h

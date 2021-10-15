@@ -114,6 +114,15 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *en
     AEESTACK_EnableDebugMsg(1);
 #endif
 
+    breInitConfig();
+
+    int width, height;
+    breGetConfigEntry(BRE_CFGE_DISP_WIDTH, &width);
+    breGetConfigEntry(BRE_CFGE_DISP_HEIGHT, &height);
+    bool landscape = width > height;
+
+    env->CallVoidMethod(thiz, env->GetMethodID(env->FindClass("io/github/usernameak/brewemulator/MainActivity"), "setUseLandscapeOrientation", "(Z)V"), landscape);
+
     IShell *pIShell = AEE_Init(0);
     if(pIShell) {
         __android_log_print(ANDROID_LOG_INFO, "BREWEmulatorAndroid", "AEE Initialized");

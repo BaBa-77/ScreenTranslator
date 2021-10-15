@@ -9,7 +9,10 @@
         android:allowBackup="true"
         android:label="Melange"
         android:supportsRtl="true">
-        <activity android:theme="@android:style/Theme.NoTitleBar" android:name=".MainActivity" android:resizeableActivity="false" android:screenOrientation="portrait"
+        <activity android:theme="@android:style/Theme.NoTitleBar"
+            android:name=".MainActivity"
+            android:resizeableActivity="false"
+            android:configChanges="orientation|screenSize"
             tools:targetApi="n">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

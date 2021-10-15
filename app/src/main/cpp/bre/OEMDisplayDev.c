@@ -12,6 +12,7 @@
 #include "../bre2/breGfx.h"
 #include "../bre2/breConfig.h"
 #include <GLES/gl.h>
+#include <AEEFontsStandard.BID>
 
 static boolean gbInit = 0;
 static IBitmap *gpDevBitmap = NULL;
@@ -105,9 +106,9 @@ extern int OEMDisplayDev_New(IShell * piShell, AEECLSID cls, void **ppif)
         return ENOMEMORY;
     }
 
-    // ANativeWindow_setBuffersGeometry(gNativeWindow, 0, 0, AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM);
-    int width = BRE_DISPLAY_CONFIG_WIDTH;// ANativeWindow_getWidth(gNativeWindow);
-    int height = BRE_DISPLAY_CONFIG_HEIGHT;//ANativeWindow_getHeight(gNativeWindow);
+    int width, height;
+    breGetConfigEntry(BRE_CFGE_DISP_WIDTH, &width);
+    breGetConfigEntry(BRE_CFGE_DISP_HEIGHT, &height);
 
     pMe->pvt = (AEEVTBL(IDisplayDev) *)&gOEMDisplayDevFuncs;
     pMe->nRefs = 1;
@@ -116,7 +117,10 @@ extern int OEMDisplayDev_New(IShell * piShell, AEECLSID cls, void **ppif)
     pMe->texture = 0;
 
     *ppif = pMe;
+
     gOEMDisplayDev = pMe;
+    OEMDisplayDev_AddRef(pMe);
+
     return SUCCESS;
 }
 
@@ -140,8 +144,9 @@ extern int OEMBitmapDev_New(IShell * piShell, AEECLSID cls, void **ppif)
             return nErr;
         }
 
-        int width = BRE_DISPLAY_CONFIG_WIDTH;
-        int height = BRE_DISPLAY_CONFIG_HEIGHT;
+        int width, height;
+        breGetConfigEntry(BRE_CFGE_DISP_WIDTH, &width);
+        breGetConfigEntry(BRE_CFGE_DISP_HEIGHT, &height);
 
         nErr = OEMBitmap16_NewEx(width, height, pDispDev->framebuffer, NULL, pDispDev, (IBitmap**)ppif);
         if (SUCCESS != nErr) {
@@ -262,8 +267,12 @@ int breOemDpyUpdate() {
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    float xScalingRatio = (float) nativeWidth / (float) BRE_DISPLAY_CONFIG_WIDTH;
-    float yScalingRatio = (float) nativeHeight / (float) BRE_DISPLAY_CONFIG_HEIGHT;
+    int displayWidth, displayHeight;
+    breGetConfigEntry(BRE_CFGE_DISP_WIDTH, &displayWidth);
+    breGetConfigEntry(BRE_CFGE_DISP_HEIGHT, &displayHeight);
+
+    float xScalingRatio = (float) nativeWidth / (float) displayWidth;
+    float yScalingRatio = (float) nativeHeight / (float) displayHeight;
 
     float scalingRatio = yScalingRatio;
     if(xScalingRatio < yScalingRatio) {
@@ -274,7 +283,7 @@ int breOemDpyUpdate() {
         glGenTextures(1, &pMe->texture);
         glBindTexture(GL_TEXTURE_2D, pMe->texture);
 
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, BRE_DISPLAY_CONFIG_WIDTH, BRE_DISPLAY_CONFIG_HEIGHT, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, displayWidth, displayHeight, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -296,7 +305,7 @@ int breOemDpyUpdate() {
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D, pMe->texture);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, BRE_DISPLAY_CONFIG_WIDTH, BRE_DISPLAY_CONFIG_HEIGHT, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, pMe->framebuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, displayWidth, displayHeight, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, pMe->framebuffer);
 
     struct OEMDisplayDev_BufferDataStruct *bdata = MALLOC(sizeof(struct OEMDisplayDev_BufferDataStruct) * 6);
     bdata[0].x = 0.0f;
@@ -305,27 +314,27 @@ int breOemDpyUpdate() {
     bdata[0].v = 0.0f;
 
     bdata[1].x = 0.0f;
-    bdata[1].y = BRE_DISPLAY_CONFIG_HEIGHT * scalingRatio;
+    bdata[1].y = ((float)displayHeight) * scalingRatio;
     bdata[1].u = 0.0f;
     bdata[1].v = 1.0f;
 
-    bdata[2].x = BRE_DISPLAY_CONFIG_WIDTH * scalingRatio;
+    bdata[2].x = ((float)displayWidth) * scalingRatio;
     bdata[2].y = 0.0f;
     bdata[2].u = 1.0f;
     bdata[2].v = 0.0f;
 
-    bdata[3].x = BRE_DISPLAY_CONFIG_WIDTH * scalingRatio;
+    bdata[3].x = ((float)displayWidth) * scalingRatio;
     bdata[3].y = 0.0f;
     bdata[3].u = 1.0f;
     bdata[3].v = 0.0f;
 
     bdata[4].x = 0.0f;
-    bdata[4].y = BRE_DISPLAY_CONFIG_HEIGHT * scalingRatio;
+    bdata[4].y = ((float)displayHeight) * scalingRatio;
     bdata[4].u = 0.0f;
     bdata[4].v = 1.0f;
 
-    bdata[5].x = BRE_DISPLAY_CONFIG_WIDTH * scalingRatio;
-    bdata[5].y = BRE_DISPLAY_CONFIG_HEIGHT * scalingRatio;
+    bdata[5].x = ((float)displayWidth) * scalingRatio;
+    bdata[5].y = ((float)displayHeight) * scalingRatio;
     bdata[5].u = 1.0f;
     bdata[5].v = 1.0f;
 

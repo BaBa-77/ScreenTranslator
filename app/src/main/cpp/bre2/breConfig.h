@@ -9,8 +9,17 @@
 #define BRE_CFGE_DISP_FRAMES 6
 #define BRE_CFGE_FORCE_TIME 7
 
-#define BRE_DISPLAY_CONFIG_WIDTH 240
-#define BRE_DISPLAY_CONFIG_HEIGHT 320
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void breInitConfig();
+void breGetConfigEntry(int entryId, void *outData);
+
+#ifdef __cplusplus
+};
+#endif
+
 #define BRE_CONFIG_ESN 0xab2b3c4f
 #define BRE_CONFIG_IMEI "1234567812345678"
 #define BRE_CONFIG_HEAP_SIZE (32 * 1024 * 1024)

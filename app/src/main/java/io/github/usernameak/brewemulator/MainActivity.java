@@ -1,6 +1,7 @@
 package io.github.usernameak.brewemulator;
 
 import android.app.Activity;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Surface;
@@ -39,6 +40,14 @@ public class MainActivity extends Activity {
         super.onDestroy();
 
         brewEmuJNIShutdown();
+    }
+
+    public void setUseLandscapeOrientation(boolean value) {
+        if(value) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+        }
     }
 
     public native boolean brewEmuKeyUp(int keyCode);

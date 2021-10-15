@@ -167,8 +167,11 @@ void OEM_SetBAM_ADSAccount(void) {
 void OEM_GetDeviceInfo(AEEDeviceInfo * pi) {
     // TODO:
 
-    pi->cxScreen = BRE_DISPLAY_CONFIG_WIDTH;
-    pi->cyScreen = BRE_DISPLAY_CONFIG_HEIGHT;
+    int width, height;
+    breGetConfigEntry(BRE_CFGE_DISP_WIDTH, &width);
+    breGetConfigEntry(BRE_CFGE_DISP_HEIGHT, &height);
+    pi->cxScreen = width;
+    pi->cyScreen = height;
     pi->cxAltScreen = 0;
     pi->cyAltScreen = 0;
     pi->cxScrollBar = 8;
