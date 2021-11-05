@@ -223,8 +223,8 @@ AVKType translateKeycode(jint keyCode) {
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyUp(JNIEnv *env, jobject thiz, jint keyCode) {
-    AVKType avk = translateKeycode(keyCode);
+Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyUp(JNIEnv *env, jobject thiz, jint avk) {
+    /*AVKType avk = translateKeycode(keyCode);*/
     if(avk == AVK_UNDEFINED) {
         return false;
     }
@@ -234,8 +234,8 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyUp(JNIEnv *env, jo
 
 extern "C"
 JNIEXPORT jboolean JNICALL
-Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyDown(JNIEnv *env, jobject thiz, jint keyCode) {
-    AVKType avk = translateKeycode(keyCode);
+Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyDown(JNIEnv *env, jobject thiz, jint avk) {
+    /*AVKType avk = translateKeycode(keyCode);*/
     if(avk == AVK_UNDEFINED) {
         return false;
     }
