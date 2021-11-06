@@ -80,6 +80,7 @@ add_library( brewemu SHARED
         breABI.c
 
         bre/AEENet.c
+        bre/AEEMediaUtil.c
         bre/OEMRan.c
         bre/OEMOS.c
         bre/OEMMutex.c

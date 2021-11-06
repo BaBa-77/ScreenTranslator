@@ -22,7 +22,7 @@ void breGetConfigEntry(int entryId, void *outData);
 
 #define BRE_CONFIG_ESN 0xab2b3c4f
 #define BRE_CONFIG_IMEI "1234567812345678"
-#define BRE_CONFIG_HEAP_SIZE (32 * 1024 * 1024)
+#define BRE_CONFIG_HEAP_SIZE (64 * 1024 * 1024)
 #define BRE_ENABLE_PLATFORM_DEBUG
 #define BRE_DISPLAY_CONFIG_FRAMES 0
 

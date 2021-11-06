@@ -106,6 +106,9 @@ int AEENetMgr_New(IShell *pIShell, AEECLSID ClsId, void **ppObj) {
         if (!pNew) {
             return ENOMEMORY;
         } else {
+            pNew->m_nRefs = 1;
+
+            *ppObj = pNew;
             return AEE_SUCCESS;
         }
     }
