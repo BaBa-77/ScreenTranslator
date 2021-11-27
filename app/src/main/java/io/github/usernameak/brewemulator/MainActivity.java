@@ -17,20 +17,19 @@ public class MainActivity extends Activity {
         System.loadLibrary("brewemu");
     }
 
+    private ViewGroup keypad;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        EmulatorMainContext mainContext = new EmulatorMainContext();
-        mainContext.mainActivity = this;
-
         FrameLayout fr = new FrameLayout(this);
 
-        EmulatorSurfaceView surfaceView = new EmulatorSurfaceView(getApplicationContext(), mainContext);
+        EmulatorSurfaceView surfaceView = new EmulatorSurfaceView(getApplicationContext());
         surfaceView.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         fr.addView(surfaceView);
 
-        ViewGroup keypad = EmulatorKeypad.buildKeypad(this, new EmulatorKeypad.IKeypadHandler() {
+        keypad = EmulatorKeypad.buildKeypad(this, new EmulatorKeypad.IKeypadHandler() {
             @Override
             public void onButtonDown(int code) {
                 brewEmuKeyDown(code);
@@ -47,8 +46,13 @@ public class MainActivity extends Activity {
         fr.setFocusable(false);
 
         setContentView(fr);
+
+        brewEmuJNIStartup();
     }
 
+    private void hideKeypad() {
+        keypad.setVisibility(View.GONE);
+    }
 
     private int translateKeycode(int keyCode) {
         int avk = 0xE010;
@@ -171,6 +175,6 @@ public class MainActivity extends Activity {
     public native boolean brewEmuKeyUp(int keyCode);
     public native boolean brewEmuKeyDown(int keyCode);
 
-    public native void brewEmuJNIStartup(Surface surface);
+    public native void brewEmuJNIStartup();
     public native void brewEmuJNIShutdown();
 }

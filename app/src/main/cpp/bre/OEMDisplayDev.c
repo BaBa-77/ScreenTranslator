@@ -256,6 +256,7 @@ int breOemDpyUpdate() {
     IDisplayDev *pMe = gOEMDisplayDev;
 
     if(!pMe) return SUCCESS;
+    if(!breGfxIsInitialized()) return SUCCESS;
 
     int nativeWidth = ANativeWindow_getWidth(gNativeWindow);
     int nativeHeight = ANativeWindow_getHeight(gNativeWindow);

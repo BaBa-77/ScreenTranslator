@@ -8,6 +8,7 @@
 #define BRE_CFGE_DEBUG_LOG 5
 #define BRE_CFGE_DISP_FRAMES 6
 #define BRE_CFGE_FORCE_TIME 7
+#define BRE_CFGE_KEYPAD 8
 
 #ifdef __cplusplus
 extern "C" {

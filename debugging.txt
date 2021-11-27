@@ -16,3 +16,6 @@ module address is in: reg r r0
 b -a `(void())Mod_Load`+0x92
 
 b -a `(void())AEEAddrBook_New`+0x38
+
+0x8b1d9e10
+0xE9BF4

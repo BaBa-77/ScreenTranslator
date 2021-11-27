@@ -8,12 +8,8 @@ import android.view.SurfaceView;
 
 @SuppressLint("ViewConstructor")
 public class EmulatorSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
-    private final EmulatorMainContext emulatorMainContext;
-
-    public EmulatorSurfaceView(Context context, EmulatorMainContext emulatorMainContext) {
+    public EmulatorSurfaceView(Context context) {
         super(context);
-
-        this.emulatorMainContext = emulatorMainContext;
 
         getHolder().addCallback(this);
     }
@@ -25,11 +21,8 @@ public class EmulatorSurfaceView extends SurfaceView implements SurfaceHolder.Ca
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         System.out.println("surfaceCreated");
-        emulatorMainContext.surface = holder.getSurface();
 
         nSurfaceCreated(holder.getSurface());
-
-        emulatorMainContext.checkInitialized();
     }
 
     @Override

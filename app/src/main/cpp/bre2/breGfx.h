@@ -9,6 +9,8 @@ struct ANativeWindow;
 void breGfxAcqCx();
 void breGfxRelCx();
 void breGfxSwap();
+int breGfxIsInitialized();
+
 extern struct ANativeWindow *gNativeWindow;
 
 #ifdef __cplusplus

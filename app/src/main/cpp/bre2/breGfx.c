@@ -76,6 +76,12 @@ void breGfxDestroySurface() {
     gNativeWindow = NULL;
 }
 
+int breGfxIsInitialized() {
+    return gEglCx != NULL;
+}
+
+int breOemDpyUpdate();
+
 JNIEXPORT void JNICALL
 Java_io_github_usernameak_brewemulator_EmulatorSurfaceView_nSurfaceCreated(JNIEnv *env, jobject thiz, jobject surface) {
     if(!gEglCx) {
@@ -84,9 +90,10 @@ Java_io_github_usernameak_brewemulator_EmulatorSurfaceView_nSurfaceCreated(JNIEn
     ANativeWindow *nativeWindow = ANativeWindow_fromSurface(env, surface);
     breGfxInitSurface(nativeWindow);
     ANativeWindow_release(nativeWindow);
+    if(AEE_IsInitialized()) {
+        breOemDpyUpdate();
+    }
 }
-
-int breOemDpyUpdate();
 
 JNIEXPORT void JNICALL
 Java_io_github_usernameak_brewemulator_EmulatorSurfaceView_nSurfaceChanged(JNIEnv *env, jobject thiz) {

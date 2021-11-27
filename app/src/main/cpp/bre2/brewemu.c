@@ -17,6 +17,7 @@
 #include <limits.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 const char *gExternalFilesDir = NULL;
 
@@ -39,19 +40,21 @@ static void mkdirs(const char *dir) {
 }
 
 static void acquireExternalFilesDir(JNIEnv *env, jobject thiz) {
-    jclass activity_clazz = (*env)->FindClass(env, "android/app/Activity");
+    jclass environment_clazz = (*env)->FindClass(env, "android/os/Environment");
     jclass file_clazz = (*env)->FindClass(env, "java/io/File");
-    jmethodID getExternalFilesDir = (*env)->GetMethodID(env, activity_clazz, "getExternalFilesDir",
-                                                     "(Ljava/lang/String;)Ljava/io/File;");
-    jmethodID getAbsolutePath = (*env)->GetMethodID(env, file_clazz, "getAbsolutePath",
-                                                 "()Ljava/lang/String;");
-    jobject externalFilesDir = (*env)->CallObjectMethod(env, thiz, getExternalFilesDir,
-                                                            (jobject) NULL);
+    jmethodID getExternalStorageDir = (*env)->GetStaticMethodID(env, environment_clazz, "getExternalStorageDirectory",
+                                                     "()Ljava/io/File;");
+    jobject externalFilesDir = (*env)->CallStaticObjectMethod(env, environment_clazz, getExternalStorageDir);
 
+    jmethodID getAbsolutePath = (*env)->GetMethodID(env, file_clazz, "getAbsolutePath",
+                                                    "()Ljava/lang/String;");
     jobject absPath = (jstring) (*env)->CallObjectMethod(env, externalFilesDir, getAbsolutePath);
 
     const char *externalFilesDirStr = (*env)->GetStringUTFChars(env, absPath, NULL);
-    gExternalFilesDir = strdup(externalFilesDirStr);
+    char *brewDataDir = malloc(PATH_MAX);
+    strcpy(brewDataDir, externalFilesDirStr);
+    strcpy(brewDataDir + strlen(externalFilesDirStr), "/MelangeBREW/");
+    gExternalFilesDir = brewDataDir;
 
     mkdirs(gExternalFilesDir);
 }
@@ -87,10 +90,18 @@ static AEECallback gCBStartLauncherApp;
 static bool isBREWRunning = false;
 
 JNIEXPORT void JNICALL
-Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *env, jobject thiz, jobject surface) {
+Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *env, jobject thiz) {
     breHookSignatureVerification();
 
     acquireExternalFilesDir(env, thiz);
+
+    breInitConfig();
+
+    int keypadMode;
+    breGetConfigEntry(BRE_CFGE_KEYPAD, &keypadMode);
+    if(keypadMode == 0) {
+        (*env)->CallVoidMethod(env, thiz, (*env)->GetMethodID(env, (*env)->FindClass(env, "io/github/usernameak/brewemulator/MainActivity"), "hideKeypad", "()V"));
+    }
 
     int useDbgLog = 0;
     breGetConfigEntry(BRE_CFGE_DEBUG_LOG, &useDbgLog);
@@ -114,8 +125,6 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *en
         AEEFREEMEM_EnableDebugMsg(1);
         AEESTACK_EnableDebugMsg(1);
     }
-
-    breInitConfig();
 
     int width, height;
     breGetConfigEntry(BRE_CFGE_DISP_WIDTH, &width);
