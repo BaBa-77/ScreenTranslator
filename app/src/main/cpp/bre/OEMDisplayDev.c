@@ -350,9 +350,11 @@ int breOemDpyUpdate() {
 
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
-    if(BRE_DISPLAY_CONFIG_FRAMES) {
+    int frames;
+    breGetConfigEntry(BRE_CFGE_DISP_FRAMES, &frames);
+    if(frames) {
         uint32 time = GETUPTIMEMS();
-        uint32 gNextFrameDrawTime = gLastFrameDrawTime + (1000 / BRE_DISPLAY_CONFIG_FRAMES);
+        uint32 gNextFrameDrawTime = gLastFrameDrawTime + (1000 / frames);
         if (time < gNextFrameDrawTime) {
             MSLEEP(gNextFrameDrawTime - time);
         }

@@ -104,6 +104,7 @@ add_library( brewemu SHARED
         bre/OEMSysClock.c
         bre/ARMLegacyABI.S
         bre/OEMAddrBook.c
+        bre/OEMMediaCMidi.c
 
         bre2/breConfig.c
         bre2/breConfig.h
@@ -112,7 +113,7 @@ add_library( brewemu SHARED
         bre2/breMockSignature.c
         bre2/breStartup.c
         bre2/breGfx.c
-        bre2/brewemu.cpp
+        bre2/brewemu.c
         bre2/brewemu.h
 
 

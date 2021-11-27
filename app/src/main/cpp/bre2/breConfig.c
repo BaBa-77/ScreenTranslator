@@ -4,9 +4,16 @@
 #include <stdlib.h>
 #include <limits.h>
 #include "toml.h"
+#include <string.h>
 
 static int breCfgWidth = 240;
 static int breCfgHeight = 320;
+static uint32_t breCfgEsn = 0xab2b3c4f;
+static char breCfgImei[16] = "123456781234567";
+static int breCfgHeapSize = 67108864;
+static int breCfgDebugLog = 0;
+static int breCfgFrames = 0;
+static uint64_t breCfgForcedTime = 0;
 
 void breInitConfig() {
     char *pathbuf = malloc(PATH_MAX);
@@ -34,6 +41,37 @@ void breInitConfig() {
         if(height.ok) {
             breCfgHeight = (int) height.u.i;
         }
+
+        toml_datum_t esn = toml_int_in(conf, "esn");
+        if(esn.ok) {
+            breCfgEsn = (uint32_t) esn.u.i;
+        }
+
+        toml_datum_t imei = toml_string_in(conf, "imei");
+        if(imei.ok) {
+            strncpy(breCfgImei, imei.u.s, 16);
+            free(imei.u.s);
+        }
+
+        toml_datum_t heapSize = toml_int_in(conf, "heapSize");
+        if(heapSize.ok) {
+            breCfgHeapSize = (uint32_t) heapSize.u.i;
+        }
+
+        toml_datum_t debugLog = toml_bool_in(conf, "debugLog");
+        if(debugLog.ok) {
+            breCfgDebugLog = debugLog.u.b;
+        }
+
+        toml_datum_t frames = toml_bool_in(conf, "frames");
+        if(frames.ok) {
+            breCfgFrames = (int) frames.u.i;
+        }
+
+        toml_datum_t forcedTime = toml_bool_in(conf, "forcedTime");
+        if(forcedTime.ok) {
+            breCfgForcedTime = (uint64_t) forcedTime.u.i;
+        }
     }
 
     cleanup:
@@ -45,5 +83,17 @@ void breGetConfigEntry(int entryId, void *outData) {
         *((int *)outData) = breCfgWidth;
     } else if(entryId == BRE_CFGE_DISP_HEIGHT) {
         *((int *)outData) = breCfgHeight;
+    } else if(entryId == BRE_CFGE_ESN) {
+        *((uint32_t *)outData) = breCfgEsn;
+    } else if(entryId == BRE_CFGE_IMEI) {
+        strncpy((char *)outData, breCfgImei, 16);
+    } else if(entryId == BRE_CFGE_HEAP_SIZE) {
+        *((uint32_t *)outData) = breCfgHeapSize;
+    } else if(entryId == BRE_CFGE_DEBUG_LOG) {
+        *((int *)outData) = breCfgDebugLog;
+    } else if(entryId == BRE_CFGE_DISP_FRAMES) {
+        *((int *)outData) = breCfgFrames;
+    } else if(entryId == BRE_CFGE_FORCE_TIME) {
+        *((uint64_t *)outData) = breCfgForcedTime;
     }
 }

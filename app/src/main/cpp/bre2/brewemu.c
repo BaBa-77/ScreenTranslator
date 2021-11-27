@@ -1,25 +1,24 @@
 #include "brewemu.h"
 
-extern "C" {
 #include <AEE_OEMDispatch.h>
 #include <OEMNotify.h>
 #include <AEEConfig.h>
 #include <AEEModTable.h>
 #include <BREWVersion.h>
 #undef EALREADY
-}
 
 #include "breConfig.h"
 #include <jni.h>
-#include <string>
 #include <sys/stat.h>
 #include <android/native_window_jni.h>
 #include <android/log.h>
 #include <android/keycodes.h>
-#include <thread>
 #include <AEE_OEM.h>
+#include <limits.h>
+#include <string.h>
+#include <stdio.h>
 
-const char *gExternalFilesDir = nullptr;
+const char *gExternalFilesDir = NULL;
 
 static void mkdirs(const char *dir) {
     char tmp[PATH_MAX];
@@ -40,79 +39,81 @@ static void mkdirs(const char *dir) {
 }
 
 static void acquireExternalFilesDir(JNIEnv *env, jobject thiz) {
-    jclass activity_clazz = env->FindClass("android/app/Activity");
-    jclass file_clazz = env->FindClass("java/io/File");
-    jmethodID getExternalFilesDir = env->GetMethodID(activity_clazz, "getExternalFilesDir",
+    jclass activity_clazz = (*env)->FindClass(env, "android/app/Activity");
+    jclass file_clazz = (*env)->FindClass(env, "java/io/File");
+    jmethodID getExternalFilesDir = (*env)->GetMethodID(env, activity_clazz, "getExternalFilesDir",
                                                      "(Ljava/lang/String;)Ljava/io/File;");
-    jmethodID getAbsolutePath = env->GetMethodID(file_clazz, "getAbsolutePath",
+    jmethodID getAbsolutePath = (*env)->GetMethodID(env, file_clazz, "getAbsolutePath",
                                                  "()Ljava/lang/String;");
-    auto externalFilesDir = env->CallObjectMethod(thiz, getExternalFilesDir,
-                                                            (jobject) nullptr);
+    jobject externalFilesDir = (*env)->CallObjectMethod(env, thiz, getExternalFilesDir,
+                                                            (jobject) NULL);
 
-    auto absPath = (jstring) env->CallObjectMethod(externalFilesDir, getAbsolutePath);
+    jobject absPath = (jstring) (*env)->CallObjectMethod(env, externalFilesDir, getAbsolutePath);
 
-    auto externalFilesDirStr = env->GetStringUTFChars(absPath, nullptr);
+    const char *externalFilesDirStr = (*env)->GetStringUTFChars(env, absPath, NULL);
     gExternalFilesDir = strdup(externalFilesDirStr);
 
     mkdirs(gExternalFilesDir);
 }
 
-extern "C" void AEEREGISTRY_EnableDebugMsg(int enable);
-extern "C" void AEENOTIFY_EnableDebugMsg(int enable);
-extern "C" void AEEMIFPROP_EnableDebugMsg(int enable);
-extern "C" void AEEMIF_EnableDebugMsg(int enable);
-extern "C" void AEELICENSE_EnableDebugMsg(int enable);
-extern "C" void AEEPRELOAD_EnableDebugMsg(int enable);
-extern "C" void AEEFASTLOAD_EnableDebugMsg(int enable);
-extern "C" void AEEMOD_EnableDebugMsg(int enable);
-extern "C" void AEESERVICE_EnableDebugMsg(int enable);
-extern "C" void AEEDISPATCH_EnableDebugMsg(int enable);
-extern "C" void AEEALARMS_EnableDebugMsg(int enable);
-extern "C" void AEEEVENT_EnableDebugMsg(int enable);
-extern "C" void AEEPRIV_EnableDebugMsg(int enable);
-extern "C" void AEEKEY_EnableDebugMsg(int enable);
-extern "C" void AEEAPP_EnableDebugMsg(int enable);
-extern "C" void AEEDBGKEY_EnableDebugMsg(int enable);
-extern "C" void AEEFREEMEM_EnableDebugMsg(int enable);
-extern "C" void AEESTACK_EnableDebugMsg(int enable);
+void AEEREGISTRY_EnableDebugMsg(int enable);
+void AEENOTIFY_EnableDebugMsg(int enable);
+void AEEMIFPROP_EnableDebugMsg(int enable);
+void AEEMIF_EnableDebugMsg(int enable);
+void AEELICENSE_EnableDebugMsg(int enable);
+void AEEPRELOAD_EnableDebugMsg(int enable);
+void AEEFASTLOAD_EnableDebugMsg(int enable);
+void AEEMOD_EnableDebugMsg(int enable);
+void AEESERVICE_EnableDebugMsg(int enable);
+void AEEDISPATCH_EnableDebugMsg(int enable);
+void AEEALARMS_EnableDebugMsg(int enable);
+void AEEEVENT_EnableDebugMsg(int enable);
+void AEEPRIV_EnableDebugMsg(int enable);
+void AEEKEY_EnableDebugMsg(int enable);
+void AEEAPP_EnableDebugMsg(int enable);
+void AEEDBGKEY_EnableDebugMsg(int enable);
+void AEEFREEMEM_EnableDebugMsg(int enable);
+void AEESTACK_EnableDebugMsg(int enable);
 
 static AEECallback gCBStartLauncherApp;
 
 #include "breStartup.h"
-#include <cassert>
+#include <assert.h>
+#include <stdbool.h>
 #include <AEE_OEMEvent.h>
 #include "breGfx.h"
 #include "breMockSignature.h"
 
 static bool isBREWRunning = false;
 
-extern "C"
 JNIEXPORT void JNICALL
 Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *env, jobject thiz, jobject surface) {
     breHookSignatureVerification();
 
     acquireExternalFilesDir(env, thiz);
 
-#ifdef BRE_ENABLE_PLATFORM_DEBUG
-    AEEREGISTRY_EnableDebugMsg(1);
-    AEENOTIFY_EnableDebugMsg(1);
-    AEEMIFPROP_EnableDebugMsg(1);
-    AEEMIF_EnableDebugMsg(1);
-    AEELICENSE_EnableDebugMsg(1);
-    AEEPRELOAD_EnableDebugMsg(1);
-    AEEFASTLOAD_EnableDebugMsg(1);
-    AEEMOD_EnableDebugMsg(1);
-    AEESERVICE_EnableDebugMsg(1);
-    AEEDISPATCH_EnableDebugMsg(1);
-    AEEALARMS_EnableDebugMsg(1);
-    AEEEVENT_EnableDebugMsg(1);
-    AEEPRIV_EnableDebugMsg(1);
-    AEEKEY_EnableDebugMsg(1);
-    AEEAPP_EnableDebugMsg(1);
-    AEEDBGKEY_EnableDebugMsg(1);
-    AEEFREEMEM_EnableDebugMsg(1);
-    AEESTACK_EnableDebugMsg(1);
-#endif
+    int useDbgLog = 0;
+    breGetConfigEntry(BRE_CFGE_DEBUG_LOG, &useDbgLog);
+    if(useDbgLog) {
+        AEEREGISTRY_EnableDebugMsg(1);
+        AEENOTIFY_EnableDebugMsg(1);
+        AEEMIFPROP_EnableDebugMsg(1);
+        AEEMIF_EnableDebugMsg(1);
+        AEELICENSE_EnableDebugMsg(1);
+        AEEPRELOAD_EnableDebugMsg(1);
+        AEEFASTLOAD_EnableDebugMsg(1);
+        AEEMOD_EnableDebugMsg(1);
+        AEESERVICE_EnableDebugMsg(1);
+        AEEDISPATCH_EnableDebugMsg(1);
+        AEEALARMS_EnableDebugMsg(1);
+        AEEEVENT_EnableDebugMsg(1);
+        AEEPRIV_EnableDebugMsg(1);
+        AEEKEY_EnableDebugMsg(1);
+        AEEAPP_EnableDebugMsg(1);
+        AEEDBGKEY_EnableDebugMsg(1);
+        AEEFREEMEM_EnableDebugMsg(1);
+        AEESTACK_EnableDebugMsg(1);
+    }
 
     breInitConfig();
 
@@ -121,7 +122,7 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *en
     breGetConfigEntry(BRE_CFGE_DISP_HEIGHT, &height);
     bool landscape = width > height;
 
-    env->CallVoidMethod(thiz, env->GetMethodID(env->FindClass("io/github/usernameak/brewemulator/MainActivity"), "setUseLandscapeOrientation", "(Z)V"), landscape);
+    (*env)->CallVoidMethod(env, thiz, (*env)->GetMethodID(env, (*env)->FindClass(env, "io/github/usernameak/brewemulator/MainActivity"), "setUseLandscapeOrientation", "(Z)V"), landscape);
 
     IShell *pIShell = AEE_Init(0);
     if(pIShell) {
@@ -221,7 +222,6 @@ AVKType translateKeycode(jint keyCode) {
     return avk;
 }
 
-extern "C"
 JNIEXPORT jboolean JNICALL
 Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyUp(JNIEnv *env, jobject thiz, jint avk) {
     /*AVKType avk = translateKeycode(keyCode);*/
@@ -232,7 +232,6 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyUp(JNIEnv *env, jo
     return true;
 }
 
-extern "C"
 JNIEXPORT jboolean JNICALL
 Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyDown(JNIEnv *env, jobject thiz, jint avk) {
     /*AVKType avk = translateKeycode(keyCode);*/
@@ -244,7 +243,6 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyDown(JNIEnv *env, 
     return true;
 }
 
-extern "C"
 JNIEXPORT void JNICALL
 Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIShutdown(JNIEnv *env, jobject thiz) {
     if(isBREWRunning) {

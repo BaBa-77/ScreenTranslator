@@ -50,7 +50,7 @@ int OEMTAPI_Destroy( OEMTAPI * pme ) {
 
 int OEMTAPI_GetStatus( OEMTAPI * po, TAPIStatus * ps) {
     memset(ps, 0, sizeof(TAPIStatus));
-    strcpy(ps->szMobileID, BRE_CONFIG_IMEI);
+    breGetConfigEntry(BRE_CFGE_IMEI, &ps->szMobileID);
     ps->state = PS_OFFLINE;
     return SUCCESS;
 }

@@ -82,8 +82,10 @@ static int CSysClock_GetTimeUS(ISysClock *po, uint64struct *pstUS) {
     }
 
     uint64 time;
-    if(BRE_FORCED_TIME != 0ULL) {
-        time = BRE_FORCED_TIME * 1000000ULL;
+    uint64_t forcedTime;
+    breGetConfigEntry(BRE_CFGE_FORCE_TIME, &forcedTime);
+    if(forcedTime != 0ULL) {
+        time = forcedTime * 1000000ULL;
     } else {
         time = (tv.tv_sec * 1000000ULL + tv.tv_nsec / 1000ULL) - (315964800ULL * 1000000ULL);
     }

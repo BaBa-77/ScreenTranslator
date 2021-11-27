@@ -123,8 +123,8 @@ int OEM_SetConfig(AEEConfigItem i, void * pBuff, int nSize) {
 
 static void GetMobileInfo(AEEMobileInfo * pMobileInfo) {
     pMobileInfo->nCurrNAM = 0;
-    pMobileInfo->dwESN = BRE_CONFIG_ESN;
-    strcpy(pMobileInfo->szMobileID, BRE_CONFIG_IMEI);
+    breGetConfigEntry(BRE_CFGE_ESN, &pMobileInfo->dwESN);
+    breGetConfigEntry(BRE_CFGE_IMEI, &pMobileInfo->szMobileID);
 }
 
 int OEM_GetConfig(AEEConfigItem i, void * pBuff, int nSize)
@@ -179,7 +179,7 @@ void OEM_GetDeviceInfo(AEEDeviceInfo * pi) {
     pi->wMenuTextScroll = 200;
     pi->nColorDepth = 24;
     pi->wMenuImageDelay = 1000;
-    pi->dwRAM = BRE_CONFIG_HEAP_SIZE;
+    breGetConfigEntry(BRE_CFGE_HEAP_SIZE, &pi->dwRAM);
     pi->bAltDisplay = FALSE;
     pi->bFlip = FALSE;
     pi->bVibrator = TRUE;

@@ -44,6 +44,8 @@ public class MainActivity extends Activity {
         keypad.setLayoutParams(new FrameLayout.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT, Gravity.BOTTOM));
         fr.addView(keypad);
 
+        fr.setFocusable(false);
+
         setContentView(fr);
     }
 
@@ -137,13 +139,18 @@ public class MainActivity extends Activity {
     }
 
     @Override
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        return brewEmuKeyUp(translateKeycode(keyCode));
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        return brewEmuKeyDown(translateKeycode(keyCode));
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        int brewCode = translateKeycode(event.getKeyCode());
+        if(brewCode != 0xE010) {
+            if(event.getAction() == KeyEvent.ACTION_DOWN) {
+                brewEmuKeyDown(brewCode);
+                return true;
+            } else if(event.getAction() == KeyEvent.ACTION_UP) {
+                brewEmuKeyUp(brewCode);
+                return true;
+            }
+        }
+        return super.dispatchKeyEvent(event);
     }
 
     @Override
