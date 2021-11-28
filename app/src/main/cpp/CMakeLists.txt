@@ -49,8 +49,8 @@ set_property(TARGET aeeijg PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR
 add_library(aeepng STATIC IMPORTED)
 set_property(TARGET aeepng PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/aeepng.fixed.lib)
 
-add_library(png STATIC IMPORTED)
-set_property(TARGET png PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/png.fixed.lib)
+add_library(bpng STATIC IMPORTED)
+set_property(TARGET bpng PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/png.fixed.lib)
 
 add_library(aeeseed STATIC IMPORTED)
 set_property(TARGET aeeseed PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/aeeseed.fixed.lib)
@@ -70,8 +70,8 @@ set_property(TARGET aeebci PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR
 add_library(aeedb STATIC IMPORTED)
 set_property(TARGET aeedb PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/aeedb.fixed.lib)
 
-add_library(z STATIC IMPORTED)
-set_property(TARGET z PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/z.fixed.lib)
+add_library(brewz STATIC IMPORTED)
+set_property(TARGET brewz PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/z.fixed.lib)
 
 add_library(aeeaddrbk STATIC IMPORTED)
 set_property(TARGET aeeaddrbk PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/aeeaddrbk.fixed.lib)
@@ -97,7 +97,8 @@ add_library( brewemu SHARED
         bre/DummyMIFs.c
         bre/Shims.c
         bre/OEMMemCacheArch.c
-        bre/OEMDisplayDev.c
+        bre/OEMDisplayDevImpl.h
+        bre/OEMDisplayDevImpl.c
         bre/time_jul.c
         bre/OEMCriticalSection.c
         bre/OEMTAPI.c
@@ -115,7 +116,10 @@ add_library( brewemu SHARED
         bre2/breGfx.c
         bre2/brewemu.c
         bre2/brewemu.h
-
+        bre2/stb_image_write.c
+        bre2/stb_image_write.h
+        bre2/breScreenshot.c
+        bre2/breScreenshot.h
 
         brewappmgr/BrewAppMgr.c
         brewappmgr/BrewAppMgr.h
@@ -231,8 +235,9 @@ target_link_libraries( brewemu
         aeeunzip
         aeedb
         aeeaddrbk
+        brewz
+        bpng
         z
-        png
         egl
         GLESv1_CM
         ${log-lib}

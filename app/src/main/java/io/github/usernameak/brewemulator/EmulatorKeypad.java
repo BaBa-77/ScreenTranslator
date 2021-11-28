@@ -14,15 +14,15 @@ public class EmulatorKeypad {
     public static final String[][] KEYPAD_LABELS = {
             {"1", "2", "3", "-", "↑", "-"},
             {"4", "5", "6", "←", "•", "→"},
-            {"7", "8", "9", "S", "↓", "E"},
-            {"*", "0", "#", null, "C", null},
+            {"7", "8", "9", "+", "↓", null},
+            {"*", "0", "#", "S", "C", "E"},
     };
 
     public static final int[][] KEYPAD_KEYCODES = {
             {0xE022, 0xE023, 0xE024, 0xE036, 0xE031, 0xE037},
             {0xE025, 0xE026, 0xE027, 0xE033, 0xE035, 0xE034},
-            {0xE028, 0xE029, 0xE02A, 0xE02F, 0xE032, 0xE02E},
-            {0xE02B, 0xE021, 0xE02C, 0xE010, 0xE030, 0xE010},
+            {0xE028, 0xE029, 0xE02A, 0xE083, 0xE032, 0xE010},
+            {0xE02B, 0xE021, 0xE02C, 0xE02F, 0xE030, 0xE02E},
     };
 
     public interface IKeypadHandler {

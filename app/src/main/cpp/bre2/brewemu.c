@@ -86,6 +86,7 @@ static AEECallback gCBStartLauncherApp;
 #include <AEE_OEMEvent.h>
 #include "breGfx.h"
 #include "breMockSignature.h"
+#include "breScreenshot.h"
 
 static bool isBREWRunning = false;
 
@@ -237,6 +238,9 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyUp(JNIEnv *env, jo
     if(avk == AVK_UNDEFINED) {
         return false;
     }
+    if(avk == AVK_LAST + 1) {
+        return true;
+    }
     AEE_KeyRelease(avk);
     return true;
 }
@@ -246,6 +250,10 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyDown(JNIEnv *env, 
     /*AVKType avk = translateKeycode(keyCode);*/
     if(avk == AVK_UNDEFINED) {
         return false;
+    }
+    if(avk == AVK_LAST + 1) {
+        breScreenshot();
+        return true;
     }
     AEE_Key(avk);
     AEE_KeyPress(avk);
