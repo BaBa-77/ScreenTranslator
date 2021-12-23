@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "AEENet.h"
 
+/*
 OBJECT(CAEESocket) {
     AEEVTBL(ISocket) *pvt;
     uint32_t m_nRefs;
@@ -71,7 +72,7 @@ int AEESocket_New(IShell *pIShell, AEECLSID ClsId, void **ppObj) {
     }
 
     return EUNSUPPORTED;
-}
+}*/
 
 OBJECT(CAEENetMgr) {
     AEEVTBL(INetMgr) *pvt;
@@ -188,6 +189,6 @@ int AEENetMgr_New(IShell *pIShell, AEECLSID ClsId, void **ppObj) {
 
 const AEEStaticClass gascNetClassList[] = {
         {AEECLSID_NET, ASCF_UPGRADE, PL_NETWORK, NULL, AEENetMgr_New},
-        {AEECLSID_SOCKET, ASCF_UPGRADE, PL_NETWORK, NULL, AEESocket_New},
+        // {AEECLSID_SOCKET, ASCF_UPGRADE, PL_NETWORK, NULL, AEESocket_New},
         {0,0,0,NULL,NULL}
 };
