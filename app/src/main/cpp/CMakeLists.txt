@@ -76,7 +76,7 @@ set_property(TARGET brewz PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}
 add_library(aeeaddrbk STATIC IMPORTED)
 set_property(TARGET aeeaddrbk PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/brewrt/aeeaddrbk.fixed.lib)
 
-add_library( brewemu SHARED
+add_library(brewemu SHARED
         breABI.c
 
         bre/AEENet.c
@@ -105,7 +105,7 @@ add_library( brewemu SHARED
         bre/OEMSysClock.c
         bre/ARMLegacyABI.S
         bre/OEMAddrBook.c
-        bre/OEMMediaCMidi.c
+        bre/OEMMediaCMidi.cpp
 
         bre2/breConfig.c
         bre2/breConfig.h
@@ -195,6 +195,13 @@ add_library( brewemu SHARED
         OEMUSBHMSMIF_26108.c
         OEMUSBHMSMIF_26109.c
         samplefont.bmp.h
+
+        mmapi/MMPlayer.cpp
+        mmapi/MMPlayer.h
+        mmapi/MMStream.cpp
+        mmapi/MMStream.h
+        mmapi/MMCMXLoader.cpp
+        mmapi/MMCMXLoader.h
         )
 
 set_property(SOURCE bre/ARMLegacyABI.S PROPERTY LANGUAGE C)
@@ -209,11 +216,11 @@ target_include_directories(brewemu PRIVATE
 target_compile_options(brewemu PRIVATE -mfpu=vfpv3)
 target_link_options(brewemu PRIVATE -Wl,-z,notext -Wl,-z,muldefs -Wl,-error-limit=0)
 
-find_library( log-lib log )
-find_library( android-lib android )
+find_library(log-lib log)
+find_library(android-lib android)
 find_package(ZLIB)
 
-target_link_libraries( brewemu
+target_link_libraries(brewemu
         brew
         aee
         aeebci

@@ -1,7 +1,77 @@
 #include <OEMHeap.h>
 #include <AEE_OEM.h>
 #include <AEEModTable.h>
+#include <unistd.h>
 #include "AEENet.h"
+
+OBJECT(CAEESocket) {
+    AEEVTBL(ISocket) *pvt;
+    uint32_t m_nRefs;
+    int socketFd;
+};
+
+static uint32 AEESocket_AddRef(ISocket * po) {
+    CAEESocket *pMe = (CAEESocket *)po;
+
+    return(++(pMe->m_nRefs));
+}
+
+static uint32 AEESocket_Release(ISocket * po) {
+    CAEESocket *pMe = (CAEESocket *)po;
+    if(pMe->m_nRefs) {
+        if(--pMe->m_nRefs == 0) {
+            if(pMe->socketFd >= 0) {
+                close(pMe->socketFd);
+            }
+
+            sys_free(po);
+        }
+    }
+    return pMe->m_nRefs;
+}
+
+static uint32 AEESocket_Readable(ISocket * po) {
+
+}
+
+static const VTBL(ISocket) gsAEESocketFuncs ={ AEESocket_AddRef,
+                                               AEESocket_Release,
+                                               AEESocket_Readable,
+                                               AEESocket_Read,
+                                               AEESocket_Cancel,
+                                               AEESocket_GetPeerName,
+                                               AEESocket_GetLastError,
+                                               AEESocket_Connect,
+                                               AEESocket_Bind,
+                                               AEESocket_Write,
+                                               AEESocket_WriteV,
+                                               AEESocket_ReadV,
+                                               AEESocket_SendTo,
+                                               AEESocket_RecvFrom,
+                                               AEESocket_Writeable,
+                                               AEESocket_IOCtl};
+
+int AEESocket_New(IShell *pIShell, AEECLSID ClsId, void **ppObj) {
+    CAEESocket *pNew;
+
+    *ppObj = NULL;
+
+    if(ClsId == AEECLSID_NET) {
+        pNew = (CAEESocket *)AEE_NewClassEx((IBaseVtbl*)&gsAEESocketFuncs,
+                                            sizeof(CAEESocket), TRUE);
+        if (!pNew) {
+            return ENOMEMORY;
+        } else {
+            pNew->m_nRefs = 1;
+            pNew->socketFd = -1;
+
+            *ppObj = pNew;
+            return AEE_SUCCESS;
+        }
+    }
+
+    return EUNSUPPORTED;
+}
 
 OBJECT(CAEENetMgr) {
     AEEVTBL(INetMgr) *pvt;
@@ -58,7 +128,7 @@ NetState AEENetMgr_NetStatus(INetMgr * pINetMgr, AEENetStats * pNetStats) {
         pNetStats->dwTotalRate = 0;
     }
 
-    return NET_PPP_CLOSED;
+    return NET_PPP_OPEN;
 }
 
 INAddr AEENetMgr_GetMyIPAddr(INetMgr * pINetMgr) {
@@ -81,7 +151,7 @@ int AEENetMgr_GetOpt(INetMgr *pINetMgr, int nOptName, void *pOptVal,int *nOptSiz
     return EUNSUPPORTED;
 }
 
-static const VTBL(INetMgr) gsOEMAddrBookFuncs ={ AEENetMgr_AddRef,
+static const VTBL(INetMgr) gsAEENetMgrFuncs ={ AEENetMgr_AddRef,
                                                  AEENetMgr_Release,
                                                  AEENetMgr_SetMask,
                                                  AEENetMgr_GetHostByName,
@@ -101,7 +171,7 @@ int AEENetMgr_New(IShell *pIShell, AEECLSID ClsId, void **ppObj) {
     *ppObj = NULL;
 
     if(ClsId == AEECLSID_NET) {
-        pNew = (CAEENetMgr *)AEE_NewClassEx((IBaseVtbl*)&gsOEMAddrBookFuncs,
+        pNew = (CAEENetMgr *)AEE_NewClassEx((IBaseVtbl*)&gsAEENetMgrFuncs,
                                              sizeof(CAEENetMgr), TRUE);
         if (!pNew) {
             return ENOMEMORY;
@@ -118,5 +188,6 @@ int AEENetMgr_New(IShell *pIShell, AEECLSID ClsId, void **ppObj) {
 
 const AEEStaticClass gascNetClassList[] = {
         {AEECLSID_NET, ASCF_UPGRADE, PL_NETWORK, NULL, AEENetMgr_New},
+        {AEECLSID_SOCKET, ASCF_UPGRADE, PL_NETWORK, NULL, AEESocket_New},
         {0,0,0,NULL,NULL}
 };

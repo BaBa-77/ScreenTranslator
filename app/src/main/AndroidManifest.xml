@@ -10,11 +10,15 @@
     <application
         android:allowBackup="true"
         android:label="Melange"
-        android:supportsRtl="true">
+        android:supportsRtl="true"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round">
         <activity android:theme="@android:style/Theme.NoTitleBar"
             android:name=".MainActivity"
             android:resizeableActivity="false"
             android:configChanges="orientation|screenSize"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
             tools:targetApi="n">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

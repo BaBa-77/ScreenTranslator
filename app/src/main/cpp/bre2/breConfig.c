@@ -15,6 +15,7 @@ static int breCfgDebugLog = 0;
 static int breCfgFrames = 0;
 static uint64_t breCfgForcedTime = 0;
 static int breCfgKeypad = 1;
+static uint64_t breCfgStorageLimit = 0;
 
 void breInitConfig() {
     char *pathbuf = malloc(PATH_MAX);
@@ -64,7 +65,7 @@ void breInitConfig() {
             breCfgDebugLog = debugLog.u.b;
         }
 
-        toml_datum_t frames = toml_bool_in(conf, "frames");
+        toml_datum_t frames = toml_int_in(conf, "frames");
         if(frames.ok) {
             breCfgFrames = (int) frames.u.i;
         }
@@ -77,6 +78,11 @@ void breInitConfig() {
         toml_datum_t keypad = toml_int_in(conf, "keypad");
         if(keypad.ok) {
             breCfgKeypad = (int) forcedTime.u.i;
+        }
+
+        toml_datum_t storageLimit = toml_int_in(conf, "storageLimit");
+        if(storageLimit.ok) {
+            breCfgStorageLimit = (uint64_t) storageLimit.u.i;
         }
     }
 
@@ -103,5 +109,7 @@ void breGetConfigEntry(int entryId, void *outData) {
         *((uint64_t *)outData) = breCfgForcedTime;
     } else if(entryId == BRE_CFGE_KEYPAD) {
         *((int *)outData) = breCfgKeypad;
+    } else if(entryId == BRE_CFGE_STORAGE_LIMIT) {
+        *((uint64_t *)outData) = breCfgStorageLimit;
     }
 }

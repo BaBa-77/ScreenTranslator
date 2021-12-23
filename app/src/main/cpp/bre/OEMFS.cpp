@@ -10,6 +10,7 @@ extern "C" {
 #include "OEMFS.h"
 }
 #include "OEMFSPath_priv.h"
+#include "../bre2/breConfig.h"
 #include <AEEStdLib.h>
 
 #define POSIX_JANUARY_6_1980 315964800
@@ -389,10 +390,15 @@ int OEMFS_GetFreeSpaceEx(const char *szPath, uint32 *pdwTotal, uint32 *pdwFree)
     }
 
     if ( nRet == 0 ) {
+        uint64_t storageLimit;
+        breGetConfigEntry(BRE_CFGE_STORAGE_LIMIT, &storageLimit);
 
         // check if total space > 4GB. Cap values to 4GB if so.
         // this assumes that total space can fit in uint64. Not a bad assumption.
         qwTotal = ((uint64)info.f_bsize) * ((uint64)info.f_blocks);
+        if(storageLimit != 0 && qwTotal > storageLimit) {
+            qwTotal = storageLimit;
+        }
 
         if(pdwTotal) {
             if (qwTotal > (uint64)MAX_UINT32) {
@@ -407,7 +413,10 @@ int OEMFS_GetFreeSpaceEx(const char *szPath, uint32 *pdwTotal, uint32 *pdwFree)
             // check if free space > 4GB. Cap value to 4GB if so.
             {
                 // this assumes that free space can fit in uint64. Not a bad assumption.
-                qwFree = ((uint64)info.f_bsize) *  ((uint64)info.f_bavail);
+                qwFree = ((uint64)info.f_bsize) * ((uint64)info.f_bavail);
+                if(storageLimit != 0 && qwFree > storageLimit) {
+                    qwFree = storageLimit;
+                }
                 if (qwFree > (uint64)MAX_UINT32) {
                     *pdwFree =  MAX_UINT32;
                 }
@@ -432,6 +441,9 @@ int OEMFS_StatVFS(const char *cpszPath, uint64 *pqwTotal, uint64 *pqwFree)
     struct statvfs buf;
     uint64 qwTotal;
 
+    uint64_t storageLimit;
+    breGetConfigEntry(BRE_CFGE_STORAGE_LIMIT, &storageLimit);
+
     FARF(TRACE,("OEMFS_StatVFS()"));
 
     // map the filename and call the native statfs...
@@ -450,11 +462,18 @@ int OEMFS_StatVFS(const char *cpszPath, uint64 *pqwTotal, uint64 *pqwFree)
     }
 
     qwTotal = ((uint64)buf.f_bsize) * ((uint64)buf.f_blocks);
+    if(storageLimit != 0 && qwTotal > storageLimit) {
+        qwTotal = storageLimit;
+    }
     if (pqwTotal) {
         *pqwTotal = qwTotal;
     }
+    uint64 qwFree = ((uint64)buf.f_bsize) * ((uint64)buf.f_bavail);
+    if(storageLimit != 0 && qwFree > storageLimit) {
+        qwFree = storageLimit;
+    }
     if (pqwFree) {
-        *pqwFree =  ((uint64)buf.f_bsize) * ((uint64)buf.f_bavail);
+        *pqwFree = qwFree;
     }
 
     return SUCCESS;
