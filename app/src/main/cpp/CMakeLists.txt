@@ -113,6 +113,7 @@ add_library(brewemu SHARED
         bre2/toml.h
         bre2/breMockSignature.c
         bre2/breStartup.c
+        bre2/breMainLoop.c
         bre2/breGfx.c
         bre2/brewemu.c
         bre2/brewemu.h

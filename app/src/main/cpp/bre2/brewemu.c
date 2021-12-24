@@ -88,7 +88,8 @@ static AEECallback gCBStartLauncherApp;
 #include "breMockSignature.h"
 #include "breScreenshot.h"
 
-static bool isBREWRunning = false;
+void breMainStart();
+void breMainTerminate();
 
 JNIEXPORT void JNICALL
 Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *env, jobject thiz) {
@@ -134,14 +135,7 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIStartup(JNIEnv *en
 
     (*env)->CallVoidMethod(env, thiz, (*env)->GetMethodID(env, (*env)->FindClass(env, "io/github/usernameak/brewemulator/MainActivity"), "setUseLandscapeOrientation", "(Z)V"), landscape);
 
-    IShell *pIShell = AEE_Init(0);
-    if(pIShell) {
-        __android_log_print(ANDROID_LOG_INFO, "BREWEmulatorAndroid", "AEE Initialized");
-    } else {
-        __android_log_print(ANDROID_LOG_INFO, "BREWEmulatorAndroid", "AEE Initialization failed");
-    }
-
-    isBREWRunning = true;
+    breMainStart();
 }
 
 AVKType translateKeycode(jint keyCode) {
@@ -262,9 +256,5 @@ Java_io_github_usernameak_brewemulator_MainActivity_brewEmuKeyDown(JNIEnv *env, 
 
 JNIEXPORT void JNICALL
 Java_io_github_usernameak_brewemulator_MainActivity_brewEmuJNIShutdown(JNIEnv *env, jobject thiz) {
-    if(isBREWRunning) {
-        isBREWRunning = false;
-        AEE_Exit();
-        // breGfxDestroy();
-    }
+    breMainTerminate();
 }

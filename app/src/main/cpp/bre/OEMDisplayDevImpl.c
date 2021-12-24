@@ -367,6 +367,8 @@ int breOemDpyUpdate() {
 
     breGfxSwap();
 
+    breGfxRelCx();
+
 
     return SUCCESS;
 }

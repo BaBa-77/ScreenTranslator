@@ -51,8 +51,6 @@ void breGfxInitSurface(ANativeWindow *win) {
 
     gEglSurface = eglCreateWindowSurface(gEglDpy, gEglConfig, gNativeWindow, NULL);
     assert(gEglSurface);
-
-    breGfxAcqCx();
 }
 
 void breGfxAcqCx() {

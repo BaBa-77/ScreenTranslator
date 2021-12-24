@@ -3,13 +3,15 @@
 #include <sys/syscall.h>
 #include <android/looper.h>
 #include <string.h>
+#include <sys/fcntl.h>
 
 #include "OEMOS.h"
 #include "AEE_OEMDispatch.h"
 #include "time_jul.h"
 
-static int oemos_timer = -1;
+/*static int oemos_timer = -1;
 static int oemos_dispatchPipe[2];
+static uint32 oemos_lastDispatchTime = 0;
 
 int OEMOS_HandleTimer(int fd, int events, void *data) {
     if(events & ALOOPER_EVENT_INPUT) {
@@ -21,16 +23,21 @@ int OEMOS_HandleTimer(int fd, int events, void *data) {
             }
         } else if(fd == oemos_dispatchPipe[0]) {
             char msg;
-            read(fd, &msg, 1);
+            while(1) { // discard dispatches while they are there
+                ssize_t numRead = read(fd, &msg, 1);
+                if(numRead <= 0) {
+                    break;
+                }
+            }
             AEE_Dispatch();
         }
     }
 
     return 1;
-}
+}*/
 
 int16 OEMOS_InitLayer() {
-    oemos_timer = syscall(SYS_timerfd_create, CLOCK_MONOTONIC, 04000);
+    /*oemos_timer = syscall(SYS_timerfd_create, CLOCK_MONOTONIC, 04000);
     if(oemos_timer < 0) {
         return EFAILED;
     }
@@ -39,10 +46,12 @@ int16 OEMOS_InitLayer() {
         return EFAILED;
     }
 
+    fcntl(oemos_dispatchPipe[0], F_SETFL, fcntl(oemos_dispatchPipe[0], F_GETFL) | O_NONBLOCK);
+
     ALooper *looper = ALooper_forThread();
     ALooper_acquire(looper);
     ALooper_addFd(looper, oemos_timer, ALOOPER_POLL_CALLBACK, ALOOPER_EVENT_INPUT, &OEMOS_HandleTimer, NULL);
-    ALooper_addFd(looper, oemos_dispatchPipe[0], ALOOPER_POLL_CALLBACK, ALOOPER_EVENT_INPUT, &OEMOS_HandleTimer, NULL);
+    ALooper_addFd(looper, oemos_dispatchPipe[0], ALOOPER_POLL_CALLBACK, ALOOPER_EVENT_INPUT, &OEMOS_HandleTimer, NULL);*/
 
     return AEE_SUCCESS;
 }
@@ -128,24 +137,6 @@ void OEMOS_IntFree( uint32 intSav ) {
         sigprocmask(SIG_SETMASK, &savedSignalMask, NULL);
     }
     signalsUnlocked = intSav;
-}
-
-void OEMOS_SetTimer(uint32 nMSecs) {
-    struct itimerspec its;
-    memset(&its, 0, sizeof(struct itimerspec));
-    its.it_value.tv_sec = nMSecs / 1000;
-    its.it_value.tv_nsec = (nMSecs % 1000) * 1000000;
-
-    syscall(SYS_timerfd_settime, oemos_timer, 0, &its, NULL);
-}
-
-void OEMOS_SignalDispatch(void) {
-    char msg = 1;
-    write(oemos_dispatchPipe[1], &msg, 1);
-}
-
-void OEMOS_CancelDispatch(void) {
-    // not possible to implement with android looper
 }
 
 void OEMOS_ResetDevice(char * pszMsg, uint32 nCause) {
