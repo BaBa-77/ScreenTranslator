@@ -82,11 +82,11 @@ extern int DLS_New(IShell * ps, AEECLSID cls, void **ppif);
 const AEEStaticClass gAEEMediaClasses[] = 
 {
    {AEECLSID_MEDIAUTIL,       ASCF_UPGRADE, 0, NULL,           IMediaUtil_New},
-   // {AEECLSID_MEDIAMIDI,       ASCF_UPGRADE, 0, IMediaBg_Init,  IMediaBg_New},
+   {AEECLSID_MEDIAMIDI,       ASCF_UPGRADE, 0, IMediaBg_Init,  IMediaBg_New},
 #ifdef FEATURE_MP3
    {AEECLSID_MEDIAMP3,        ASCF_UPGRADE, 0, IMediaBg_Init,  IMediaBg_New},
 #endif
-   // {AEECLSID_MEDIAQCP,        ASCF_UPGRADE, 0, IMediaMain_Init,IMediaMain_New},
+   {AEECLSID_MEDIAQCP,        ASCF_UPGRADE, 0, IMediaMain_Init,IMediaMain_New},
 #ifdef FEATURE_WEBAUDIO
    {AEECLSID_MEDIAPMD,        ASCF_UPGRADE, 0, IMediaPMD_Init,  IMediaPMD_New},
 #endif

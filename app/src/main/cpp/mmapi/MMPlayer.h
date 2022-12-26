@@ -9,7 +9,8 @@ class MMPlayer {
 public:
     enum MMFormat : uint16_t {
         MMF_NONE = 0,
-        MMF_CMIDI
+        MMF_DETECT,
+        MMF_CMIDI,
     };
 
     MMPlayer();

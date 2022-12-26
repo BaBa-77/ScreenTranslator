@@ -1,3 +1,5 @@
+process handle -p true -n true -s true SIGSEGV
+
 b SIG_VerifyFile
 module name is in: p (char*)$r2
 

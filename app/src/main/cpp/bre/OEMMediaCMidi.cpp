@@ -168,3 +168,36 @@ extern "C" int IMediaPMD_New(IShell *ps, AEECLSID ClsId, void **ppObj) {
 
     return EUNSUPPORTED;
 }
+
+extern "C" void IMediaBg_Init(IShell *ps) {
+
+}
+
+extern "C" int IMediaBg_New(IShell *ps, AEECLSID ClsId, void **ppObj) {
+    CMedia *pNew;
+
+    *ppObj = NULL;
+
+    pNew = (CMedia*)AEE_NewClassEx((IBaseVtbl*)&gsCMediaFuncs,
+                                   sizeof(CMedia), TRUE);
+    if (!pNew) {
+        return ENOMEMORY;
+    } else {
+        pNew->m_nRefs = 1;
+        pNew->m_player = new MMPlayer;
+        pNew->m_player->setMediaFormat(MMPlayer::MMF_DETECT);
+
+        *ppObj = pNew;
+        return AEE_SUCCESS;
+    }
+
+    return EUNSUPPORTED;
+}
+
+extern "C" void IMediaMain_Init(IShell *ps) {
+    IMediaBg_Init(ps);
+}
+
+extern "C" int IMediaMain_New(IShell *ps, AEECLSID ClsId, void **ppObj) {
+    return IMediaBg_New(ps, ClsId, ppObj);
+}
