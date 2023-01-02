@@ -36,6 +36,14 @@ static int CMedia_QueryInterface(IMedia *po, AEEIID cls, void **ppo) {
         case AEECLSID_QUERYINTERFACE:
         case AEEIID_IMedia:
         case AEECLSID_MEDIAPMD:
+        case AEECLSID_MEDIAMIDI:
+        case AEECLSID_MEDIAAAC:
+        case AEECLSID_MEDIAQCP:
+        case AEECLSID_MEDIAMP3:
+        case AEECLSID_MEDIAAMR:
+        case AEECLSID_MEDIAPCM:
+        case AEECLSID_MEDIAADPCM:
+        case AEECLSID_MEDIAIMELODY:
             *ppo = (void *)po;
             CMedia_AddRef(po);
             return SUCCESS;
@@ -58,6 +66,7 @@ static int CMedia_SetMediaParm(IMedia *p, int nParamID, int32 p1, int32 p2) {
             DBGPRINTF("CMedia_SetMediaParm mdata file %s", data->pData);
         } else if(data->clsData == MMD_BUFFER) {
             cm->m_player->setMediaSource(data->pData, data->dwSize);
+            return SUCCESS;
         } else if(data->clsData == MMD_ISOURCE) {
             DBGPRINTF("CMedia_SetMediaParm mdata isource");
         }

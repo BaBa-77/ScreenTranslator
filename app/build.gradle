@@ -10,8 +10,8 @@ android {
         applicationId "io.github.usernameak.brewemulator"
         minSdkVersion 10
         targetSdkVersion 22
-        versionCode 10010
-        versionName "1.0.10"
+        versionCode 100101
+        versionName "1.0.10.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
@@ -32,9 +32,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    lintOptions {
-        checkReleaseBuilds false
-    }
     externalNativeBuild {
         cmake {
             path "src/main/cpp/CMakeLists.txt"
@@ -47,6 +44,9 @@ android {
     }
     ndkVersion "22.0.7026061"
     namespace 'io.github.usernameak.brewemulator'
+    lint {
+        checkReleaseBuilds false
+    }
 }
 
 dependencies {
