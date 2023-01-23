@@ -15,6 +15,8 @@ static int breCfgDebugLog = 0;
 static int breCfgFrames = 0;
 static uint64_t breCfgForcedTime = 0;
 static int breCfgKeypad = 1;
+static int breCfgRotation = 0;
+static int breCfgFlip = 0;
 static uint64_t breCfgStorageLimit = 0;
 
 void breInitConfig() {
@@ -77,7 +79,17 @@ void breInitConfig() {
 
         toml_datum_t keypad = toml_int_in(conf, "keypad");
         if(keypad.ok) {
-            breCfgKeypad = (int) forcedTime.u.i;
+            breCfgKeypad = (int) keypad.u.i;
+        }
+
+        toml_datum_t rotation = toml_int_in(conf, "rotation");
+        if (rotation.ok) {
+            breCfgRotation = (int) rotation.u.i;
+        }
+
+        toml_datum_t flip = toml_int_in(conf, "flip");
+        if (flip.ok) {
+            breCfgFlip = (int) flip.u.i;
         }
 
         toml_datum_t storageLimit = toml_int_in(conf, "storageLimit");
@@ -111,5 +123,9 @@ void breGetConfigEntry(int entryId, void *outData) {
         *((int *)outData) = breCfgKeypad;
     } else if(entryId == BRE_CFGE_STORAGE_LIMIT) {
         *((uint64_t *)outData) = breCfgStorageLimit;
+    } else if (entryId == BRE_CFGE_ROTATION) {
+        *((int *)outData) = breCfgRotation;
+    } else if (entryId == BRE_CFGE_FLIP) {
+        *((int *)outData) = breCfgFlip;
     }
 }

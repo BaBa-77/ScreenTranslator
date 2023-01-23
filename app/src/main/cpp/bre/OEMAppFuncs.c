@@ -163,6 +163,7 @@ void OEM_SetBAM_ADSAccount(void) {
 
 #include "../bre2/brewemu.h"
 #include <android/native_window.h>
+#include <AEEDeviceNotifier.h>
 
 void OEM_GetDeviceInfo(AEEDeviceInfo * pi) {
     // TODO:
@@ -181,7 +182,9 @@ void OEM_GetDeviceInfo(AEEDeviceInfo * pi) {
     pi->wMenuImageDelay = 1000;
     breGetConfigEntry(BRE_CFGE_HEAP_SIZE, &pi->dwRAM);
     pi->bAltDisplay = FALSE;
-    pi->bFlip = FALSE;
+    int flip;
+    breGetConfigEntry(BRE_CFGE_FLIP, &flip);
+    pi->bFlip = flip != 0;
     pi->bVibrator = TRUE;
     pi->bExtSpeaker = TRUE;
     pi->bVR = FALSE;
@@ -219,6 +222,50 @@ static const RGBVAL gSystemColors[] = {
 
 int OEM_GetDeviceInfoEx(AEEDeviceItem nItem, void *pBuff, int *pnSize) {
     switch(nItem) {
+        case AEE_DEVICESTATE_SCR_ORIENTATION: {
+            int nSize;
+
+            if (!pnSize)
+                return (EBADPARM);
+
+            nSize = MIN(*pnSize, sizeof(AEEScrOrientation));
+            *pnSize = sizeof(AEEScrOrientation);
+
+            if (NULL == pBuff) {
+                return SUCCESS;
+            }
+
+            int rot;
+            breGetConfigEntry(BRE_CFGE_ROTATION, &rot);
+
+            AEEScrOrientation orientation = rot ? AEE_SO_LANDSCAPE : AEE_SO_PORTRAIT;
+
+            MEMCPY(pBuff, &orientation, nSize);
+
+            return SUCCESS;
+        }
+        case AEE_DEVICESTATE_FLIP_OPEN: {
+            int nSize;
+
+            if(!pnSize)
+                return(EBADPARM);
+
+            nSize = MIN(*pnSize, sizeof(boolean));
+            *pnSize = sizeof(boolean);
+
+            if (NULL == pBuff) {
+                return SUCCESS;
+            }
+
+            int flip;
+            breGetConfigEntry(BRE_CFGE_FLIP, &flip);
+
+            boolean isOpen = flip != 1;
+
+            MEMCPY(pBuff, &isOpen, nSize);
+
+            return SUCCESS;
+        }
         case AEE_DEVICEITEM_SYS_COLORS_DISP1: {
             int nSize;
 

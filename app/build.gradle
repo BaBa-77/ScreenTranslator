@@ -10,8 +10,8 @@ android {
         applicationId "io.github.usernameak.brewemulator"
         minSdkVersion 10
         targetSdkVersion 22
-        versionCode 100101
-        versionName "1.0.10.1"
+        versionCode 100103
+        versionName "1.0.10.3"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         externalNativeBuild {
