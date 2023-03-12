@@ -1958,7 +1958,7 @@ static boolean AppMgr_HandleEvent(AppMgr * pme, AEEEvent eCode, uint16 wParam, u
 
                }
                return TRUE;
-            // ÖÐ¹úµçÐÅÒªÇó£¬µ«»áÐÞ¸ÄmifÎÄ¼þ£¬ÔÝ×ö³ÉÍ¨ÓÃ¹¦ÄÜ
+            // ï¿½Ð¹ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ó£¬µï¿½ï¿½ï¿½ï¿½Þ¸ï¿½mifï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨ï¿½Ã¹ï¿½ï¿½ï¿½
             case AVK_END:
                 if (pme->m_wState != ST_MAINMENU)
                 {
@@ -3980,7 +3980,7 @@ static boolean AppMgr_Options(AppMgr * pme)
    ai.wItemID  = IDC_OPTIONS_MOVE_APPS;
    IMENUCTL_AddItemEx(pme->m_pMenu, &ai);
 
-#if defined(FEATURE_BREW_DOWNLOAD)
+#if defined(FEATURE_BREW_DOWNLOAD) || 1
    ai.wText    = IDC_OPTIONS_APP_MANAGEMENT;
    ai.wImage   = IDB_OPTIONS_APP_MANAGEMENT;
    ai.wItemID  = IDC_OPTIONS_APP_MANAGEMENT;
@@ -8860,8 +8860,8 @@ static boolean AppMgr_Remove(AppMgr * pme)
    // of the apps in the pmi->apps[] array to see if any of the other
    // apps have shortcuts. Tianyu D'amore, tianyu, had this to say
    // "Yeah I think BDS prevents you from having more than one non-hidden applet.
-   // Also BREW code itself won’t really handle it either.   It would be a nice 
-   // feature (like the midlet suite concept) but don’t think we support it."
+   // Also BREW code itself wonï¿½t really handle it either.   It would be a nice 
+   // feature (like the midlet suite concept) but donï¿½t think we support it."
 #ifdef FEATURE_INTERACT_WITH_SA_APP
    hasShortcut = DoesAppHaveShortcut(pme->m_pIfm, pme->m_pCurrentApp->cls);
 #endif

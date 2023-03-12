@@ -15,6 +15,58 @@
 #include "../bre2/breConfig.h"
 #include <GLES/gl.h>
 #include <AEEFontsStandard.BID>
+#include "../OEMFont.h"
+
+#define HALF_WIDTH_UNICODE  256
+
+
+//font lib bitmap
+const char fontbitmap[] = {
+#ifdef FEATURE_USING_FONT_20
+        //GB2312
+/*
+bitmap: 5120*640
+width of per line: 640
+height of per line: 20
+width of full width char 20
+width of half-width char: 10
+line 1: ASCII, half-width
+line 2,3,4,5:    GB2312 symbols, full-width
+line 6,7,8...27: GB2312 chars,  full-width
+*/
+#ifdef FONT_NONAME_20
+#include "FontNoname20.h"
+#else
+#include "../KKFontLib20.h"
+#endif
+#elif defined(FONT_FRANKLIN_16)
+#include "FontFranklin16.h"
+#elif defined(FONT_FRANKLIN_14)
+#include "FontFranklin14.h"
+#elif defined(FEATURE_USING_FONT_24) // lzhao for Q6
+#include "KKFontLib24.h"
+#else
+#include "KKFontLib.h"
+#endif /* FEATURE_USING_FONT_20 */
+};
+
+#ifdef FONT_THIN_14
+const char fontbitmap_small[] = {
+#include "../FontThin14.h"
+};
+#endif /* FONT_THIN_14 */
+
+extern int OEMFont_NewFromBMP(IShell *pShell, IFont **ppif,
+                              const uint16 *pwGlyphs, int cntGlyphs,
+                              const char *pbyBitmap, int cbBitmap,
+                              int xCharWid,
+                              int yCharHeight,
+                              int yCharDescent,
+                              uint16 wUndefGlyph,
+                              int nHalfChars,
+                              AEECLSID cls);
+//zgm end
+
 
 static boolean gbInit = 0;
 IBitmap *gpDevBitmap = NULL;
@@ -202,15 +254,34 @@ extern int OEMBitmapDevChild_New(IShell * piShell, AEECLSID cls, void **ppif)
 }
 
 
-static int OEMSysFont_New(IShell * piShell, AEECLSID cls, void **ppif)
-{
+static int OEMSysFont_New(IShell *piShell, AEECLSID cls, void **ppif) {
     switch (cls) {
+
+#if 0
         case AEECLSID_FONTSYSNORMAL:
-            return ISHELL_CreateInstance(piShell, AEECLSID_FONT_BASIC11, (void **)ppif);
+      return ISHELL_CreateInstance(piShell, AEECLSID_FONT_BASIC11,
+                                   (void **)ppif);
+   case AEECLSID_FONTSYSBOLD:
+      return ISHELL_CreateInstance(piShell, AEECLSID_FONT_BASIC11B,
+                                   (void **)ppif);
+   case AEECLSID_FONTSYSLARGE:
+      return ISHELL_CreateInstance(piShell, AEECLSID_FONT_BASIC14,
+                                   (void **)ppif);
+#else
+#ifdef FONT_THIN_14
+        case AEECLSID_FONT12X12:
+            return OEMFont_NewFromBMP((IFont **)ppif, NULL, FONTCHAR_COUNT, fontbitmap_small, sizeof(fontbitmap_small),
+                                      FONTCHAR_WIDTH, FONTCHAR_HEIGHT, 0, 0, HALF_WIDTH_UNICODE, cls);
+#endif
+
+        case AEECLSID_FONTSYSNORMAL:
         case AEECLSID_FONTSYSBOLD:
-            return ISHELL_CreateInstance(piShell, AEECLSID_FONT_BASIC11B, (void **)ppif);
         case AEECLSID_FONTSYSLARGE:
-            return ISHELL_CreateInstance(piShell, AEECLSID_FONT_BASIC14, (void **)ppif);
+            return OEMFont_NewFromBMP(piShell, (IFont **) ppif, NULL, FONTCHAR_COUNT, fontbitmap,
+                                      sizeof(fontbitmap),
+                                      FONTCHAR_WIDTH, FONTCHAR_HEIGHT, 0, 0, HALF_WIDTH_UNICODE,
+                                      cls);
+#endif
         default:
             return ECLASSNOTSUPPORT;
     }
