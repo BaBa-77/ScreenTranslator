@@ -124,7 +124,7 @@ int OEM_SetConfig(AEEConfigItem i, void * pBuff, int nSize) {
 static void GetMobileInfo(AEEMobileInfo * pMobileInfo) {
     pMobileInfo->nCurrNAM = 0;
     breGetConfigEntry(BRE_CFGE_ESN, &pMobileInfo->dwESN);
-    breGetConfigEntry(BRE_CFGE_IMEI, &pMobileInfo->szMobileID);
+    breGetConfigEntry(BRE_CFGE_IMEI, &pMobileInfo-> szMobileID);
 }
 
 int OEM_GetConfig(AEEConfigItem i, void * pBuff, int nSize)

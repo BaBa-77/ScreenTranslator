@@ -18,6 +18,7 @@ android {
             cmake {
                 cppFlags "-std=c++11"
                 version "3.18.1"
+                targets "brewemu"
             }
         }
 
