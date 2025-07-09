@@ -1,6 +1,4 @@
-rootProject.name = "ScreenTranslator"
-include ':app'
-// File: settings.gradle
+// CORRECT SETTINGS.GRADLE
 pluginManagement {
     repositories {
         google()
@@ -8,3 +6,6 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+rootProject.name = "ScreenTranslator"
+include ':app'
