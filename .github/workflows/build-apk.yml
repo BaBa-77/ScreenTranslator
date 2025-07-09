@@ -32,7 +32,7 @@ jobs:
       - name: Build Debug APK
         run: |
           ./gradlew clean
-          ./gradlew :app:assembleDebug --refresh-dependencies
+          ./gradlew assembleDebug --refresh-dependencies
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
