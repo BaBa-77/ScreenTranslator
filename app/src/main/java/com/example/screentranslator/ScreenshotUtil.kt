@@ -8,7 +8,6 @@ import android.media.projection.MediaProjection
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
-import android.view.DisplayManager
 import android.view.WindowManager
 import org.jetbrains.annotations.NotNull
 import android.hardware.display.DisplayManager
