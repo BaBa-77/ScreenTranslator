@@ -3,7 +3,7 @@ name: Build APK
 on:
   push:
     branches:
-      - master  # atau 'master' tergantung nama branch kamu
+      - cnfont  # atau 'master' tergantung nama branch kamu
 
 jobs:
   build:
