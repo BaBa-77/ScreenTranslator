@@ -5,6 +5,7 @@ import android.os.Looper
 import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 
 object Translator {
     fun translate(text: String, source: String, target: String, callback: (String) -> Unit) {
