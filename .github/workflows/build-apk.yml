@@ -18,9 +18,59 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+name: Build APK
+
+on:
+  push:
+    branches:
+      - cnfont  # atau 'master' tergantung nama branch kamu
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
 
       - name: Grant permission to gradlew
         run: chmod +x ./gradlew
+
+      - name: refresh depen
+        run: ./gradlew build --refresh-dependencies
+
+      - name: hapus bat
+        run: rm -f gradlew gradlew.bat
+
+      - name: hapus wrapper
+        run: rm -rf gradle/wrapper
+
+      - name: make wrapper
+        run: gradle wrapper --gradle-version 8.7
+        
+      - name: Clean gradlew
+        run: ./gradlew clean
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ScreenTranslator-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Grant permission to gradlew
+        run: chmod +x ./gradlew
+
+      - name: refresh depen
+        run: ./gradlew build --refresh-dependencies
 
       - name: hapus bat
         run: rm -f gradlew gradlew.bat
