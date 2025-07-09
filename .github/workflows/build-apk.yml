@@ -26,6 +26,7 @@ jobs:
           
       - name: Build with full logs
         run: |
+          chmod +x gradlew
           ./gradlew :app:compileDebugKotlin \
             --stacktrace \
             --info \
