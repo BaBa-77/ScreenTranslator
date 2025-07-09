@@ -3,7 +3,7 @@ name: Build APK
 on:
   push:
     branches:
-      - cnfont  # atau 'master' tergantung nama branch kamu
+      - cnfont  # sesuaikan dengan branch Anda
 
 jobs:
   build:
@@ -13,25 +13,11 @@ jobs:
       - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Setup JDK
-        uses: actions/setup-java@v4
+      # 🔥 WAJIB DITAMBAHKAN: Setup Android SDK
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
         with:
-          java-version: '17'
-          distribution: 'temurin'
-name: Build APK
-
-on:
-  push:
-    branches:
-      - cnfont  # atau 'master' tergantung nama branch kamu
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
+          android-sdk-file: "platforms;android-34|build-tools;34.0.0"
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -42,53 +28,14 @@ jobs:
       - name: Grant permission to gradlew
         run: chmod +x ./gradlew
 
-      - name: refresh depen
-        run: ./gradlew build --refresh-dependencies
-
-      - name: hapus bat
-        run: rm -f gradlew gradlew.bat
-
-      - name: hapus wrapper
-        run: rm -rf gradle/wrapper
-
-      - name: make wrapper
-        run: gradle wrapper --gradle-version 8.7
-        
-      - name: Clean gradlew
-        run: ./gradlew clean
-
+      # 🔥 PERBAIKAN: Gunakan task yang benar dengan modul :app:
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: |
+          ./gradlew clean
+          ./gradlew :app:assembleDebug --refresh-dependencies
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: ScreenTranslator-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
-
-      - name: Grant permission to gradlew
-        run: chmod +x ./gradlew
-
-      - name: refresh depen
-        run: ./gradlew build --refresh-dependencies
-
-      - name: hapus bat
-        run: rm -f gradlew gradlew.bat
-
-      - name: hapus wrapper
-        run: rm -rf gradle/wrapper
-
-      - name: make wrapper
-        run: gradle wrapper --gradle-version 8.7
-        
-      - name: Clean gradlew
-        run: ./gradlew clean
-
-      - name: Build Debug APK
-        run: ./gradlew assembleDebug
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: ScreenTranslator-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: app/build
