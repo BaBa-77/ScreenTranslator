@@ -1,36 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- app/src/main/AndroidManifest.xml -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" package="io.github.usernameak.brewemulator">
+    package="com.example.screentranslator">
 
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"
-        tools:ignore="ScopedStorage" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
-        android:label="Melange"
-        android:supportsRtl="true"
-        android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher_round">
-
-        <meta-data android:name="android.max_aspect" android:value="2.4" />
-
-        <activity android:theme="@android:style/Theme.NoTitleBar"
-            android:name=".MainActivity"
-            android:resizeableActivity="false"
-            android:configChanges="orientation|screenSize"
-            android:icon="@mipmap/ic_launcher"
-            android:roundIcon="@mipmap/ic_launcher_round"
-            tools:targetApi="n"
-            tools:ignore="NonResizeableActivity"
-            android:exported="true">
+        android:label="Screen Translator"
+        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+        
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
+        <service android:name=".FloatingWindowService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
     </application>
-
 </manifest>
