@@ -1,15 +1,12 @@
 package com.example.screentranslator
 
 import android.app.Service
-import android.content.Context
 import android.content.Intent
-import android.graphics.PixelFormat
-import android.os.Build
-import android.os.Handler
 import android.os.IBinder
 import android.view.*
+import android.graphics.PixelFormat
+import android.os.Build
 import android.widget.ImageView
-import android.os.IBinder
 
 class FloatingWindowService : Service() {
 
