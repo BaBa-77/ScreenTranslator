@@ -7,6 +7,8 @@ import android.view.*
 import android.graphics.PixelFormat
 import android.os.Build
 import android.widget.ImageView
+import android.content.Context
+import android.hardware.display.DisplayManager
 
 class FloatingWindowService : Service() {
 
