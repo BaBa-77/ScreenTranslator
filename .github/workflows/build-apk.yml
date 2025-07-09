@@ -22,11 +22,7 @@ jobs:
           java-version: 17
           distribution: temurin
           
-      - name: Clear caches
-        run: |
-          rm -rf ~/.kotlin
-          rm -rf ~/.gradle/caches
-          ./gradlew cleanBuildCache
+      
           
       - name: Build with full logs
         run: |
