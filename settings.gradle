@@ -1,2 +1,10 @@
 rootProject.name = "ScreenTranslator"
 include ':app'
+// File: settings.gradle
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
