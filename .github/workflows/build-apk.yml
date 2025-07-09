@@ -1,41 +1,47 @@
 name: Build APK
 
-on:
-  push:
-    branches:
-      - cnfont  # sesuaikan dengan branch Anda
+on: [push]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 30
+    
     steps:
-      - name: Checkout source code
+      - name: Checkout code
         uses: actions/checkout@v4
-
-      # 🔥 WAJIB DITAMBAHKAN: Setup Android SDK
+        
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
         with:
           android-sdk-file: "platforms;android-34|build-tools;34.0.0"
-
-      - name: Setup JDK
+          
+      - name: Setup JDK 17
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Grant permission to gradlew
-        run: chmod +x ./gradlew
-
-      # 🔥 PERBAIKAN: Gunakan task yang benar dengan modul :app:
-      - name: Build Debug APK
+          java-version: 17
+          distribution: temurin
+          
+      - name: Clear caches
         run: |
-          ./gradlew clean
-          ./gradlew assembleDebug --refresh-dependencies
-
-      - name: Upload APK
+          rm -rf ~/.kotlin
+          rm -rf ~/.gradle/caches
+          ./gradlew cleanBuildCache
+          
+      - name: Build with full logs
+        run: |
+          ./gradlew :app:compileDebugKotlin \
+            --stacktrace \
+            --info \
+            --no-daemon \
+            -Porg.gradle.java.home=$JAVA_HOME_17_X64 \
+            -Pkotlin.compiler.execution.strategy="in-process"
+            
+      - name: Upload logs
+        if: ${{ failure() }}
         uses: actions/upload-artifact@v4
         with:
-          name: ScreenTranslator-APK
-          path: app/build
+          name: kotlin-compiler-logs
+          path: |
+            app/build/reports/compiler
+            app/build/declarations.json
