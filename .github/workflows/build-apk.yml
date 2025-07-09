@@ -1,44 +1,32 @@
 name: Build APK
 
-on: [push]
+on:
+  push:
+    branches:
+      - cnfont  # atau 'master' tergantung nama branch kamu
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-    
+
     steps:
-      - name: Checkout code
+      - name: Checkout source code
         uses: actions/checkout@v4
-        
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-        with:
-          android-sdk-file: "platforms;android-34|build-tools;34.0.0"
-          
-      - name: Setup JDK 17
+
+      - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: 17
-          distribution: temurin
-          
-      
-          
-      - name: Build with full logs
-        run: |
-          chmod +x gradlew
-          ./gradlew :app:compileDebugKotlin \
-            --stacktrace \
-            --info \
-            --no-daemon \
-            -Porg.gradle.java.home=$JAVA_HOME_17_X64 \
-            -Pkotlin.compiler.execution.strategy="in-process"
-            
-      - name: Upload logs
-        if: ${{ failure() }}
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Grant permission to gradlew
+        run: chmod +x ./gradlew
+
+      - name: Build Debug APK
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: kotlin-compiler-logs
-          path: |
-            app/build/reports/compiler
-            app/build/declarations.json
+          name: ScreenTranslator-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
