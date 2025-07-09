@@ -22,6 +22,15 @@ jobs:
       - name: Grant permission to gradlew
         run: chmod +x ./gradlew
 
+      - name: hapus bat
+        run: rm -f gradlew gradlew.bat
+
+      - name: hapus wrapper
+        run: rm -rf gradle/wrapper
+
+      - name: make wrapper
+        run: gradle wrapper --gradle-version 8.7
+        
       - name: Clean gradlew
         run: ./gradlew clean
 
