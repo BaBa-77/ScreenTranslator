@@ -23,7 +23,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build Debug APK
-         |
+        run: |
           ./gradlew clean
           ./gradlew assembleDebug
 
