@@ -15,6 +15,15 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val button = Button(this).apply {
+        text = "Mulai Layanan"
+        // ...
+        }
+        
+        val frame = FrameLayout(this)
+        frame.addView(button)
+        setContentView(frame)
+
         if (!Settings.canDrawOverlays(this)) {
             val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:$packageName"))
