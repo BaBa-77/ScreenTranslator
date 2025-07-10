@@ -1,0 +1,7 @@
+{
+  "kotlin.languageServer.enabled": true,
+  "kotlin.languageServer.path": "kotlin-language-server",
+  "sonarlint.ls.javaHome": "/path/to/jdk-17/", // Wajib untuk SonarLint
+  "errorLens.enabled": true,
+  "editor.inlineSuggest.enabled": true
+}
