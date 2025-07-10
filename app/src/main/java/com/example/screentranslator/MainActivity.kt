@@ -25,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         // ...
         }
 
-        button.SetOnClickListener {
+        button.setOnClickListener {
             start()
         }
         
