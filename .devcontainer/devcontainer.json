@@ -1,14 +1,24 @@
 {
-  "name": "Android Kotlin",
-  "build": { "dockerfile": "Dockerfile" },
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
   "features": {
     "ghcr.io/devcontainers/features/android-sdk:1": {
-      "version": "34"
+      "version": "34",
+      "build-tools-version": "34.0.0",
+      "platforms-version": "34",
+      "ndk-version": "25.1.8937393",
+      "cmake-version": "3.22.1",
+      "emulator": false
     }
   },
   "customizations": {
     "vscode": {
-      "extensions": ["fwcd.kotlin", "bmuskalla.android-lint"]
+      "extensions": [
+        "fwcd.kotlin",
+        "bmuskalla.android-lint",
+        "vscjava.vscode-gradle",
+        "vscode-icons-team.vscode-icons"
+      ]
     }
-  }
+  },
+  "forwardPorts": [5037]  // Port untuk ADB
 }
