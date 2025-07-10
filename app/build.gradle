@@ -8,6 +8,11 @@ android {
     namespace 'com.example.screentranslator'
     compileSdkVersion 34
 
+    lint {
+           abortOnError = true
+           checkDependencies = true
+       }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17 // 🔥 Update ke 17
         targetCompatibility = JavaVersion.VERSION_17 // 🔥 Update ke 17
