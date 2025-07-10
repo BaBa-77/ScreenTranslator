@@ -19,11 +19,17 @@ class MainActivity : AppCompatActivity() {
         text = "Mulai Layanan"
         // ...
         }
+
+        button.SetOnClickListener {
+            start()
+        }
         
         val frame = FrameLayout(this)
         frame.addView(button)
         setContentView(frame)
+    }
 
+    private fun start() {
         if (!Settings.canDrawOverlays(this)) {
             val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                 Uri.parse("package:$packageName"))
