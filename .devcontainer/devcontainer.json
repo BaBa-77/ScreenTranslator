@@ -1,0 +1,14 @@
+{
+  "name": "Android Kotlin",
+  "build": { "dockerfile": "Dockerfile" },
+  "features": {
+    "ghcr.io/devcontainers/features/android-sdk:1": {
+      "version": "34"
+    }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["fwcd.kotlin", "bmuskalla.android-lint"]
+    }
+  }
+}
