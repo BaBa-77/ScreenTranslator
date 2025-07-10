@@ -1,14 +1,14 @@
 package com.example.screentranslator
 
 import android.app.Service
+import android.content.Context
 import android.content.Intent
-import android.os.IBinder
-import android.view.*
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.IBinder
+import android.view.*
 import android.widget.ImageView
-import android.content.Context
-import android.hardware.display.DisplayManager
+import android.widget.Toast
 
 class FloatingWindowService : Service() {
 
@@ -53,10 +53,15 @@ class FloatingWindowService : Service() {
         resultParams.y = 300
         resultView.attachToWindow(resultParams)
 
-        // Floating Button
+        // Floating Button (Overlay icon)
         floatingButton = ImageView(this).apply {
             setImageResource(android.R.drawable.ic_menu_search)
             setOnClickListener { performOCRAndTranslate() }
+            setOnLongClickListener {
+                Toast.makeText(this@FloatingWindowService, "Sentuhan lama terdeteksi!", Toast.LENGTH_SHORT).show()
+                true
+            }
+            setOnTouchListener(DragTouchListener())
         }
 
         val buttonParams = WindowManager.LayoutParams(
@@ -112,4 +117,31 @@ class FloatingWindowService : Service() {
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    // Listener agar floating button bisa di-drag
+    inner class DragTouchListener : View.OnTouchListener {
+        private var initialX = 0
+        private var initialY = 0
+        private var initialTouchX = 0f
+        private var initialTouchY = 0f
+        override fun onTouch(v: View?, event: MotionEvent): Boolean {
+            val params = floatingButton.layoutParams as WindowManager.LayoutParams
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    initialX = params.x
+                    initialY = params.y
+                    initialTouchX = event.rawX
+                    initialTouchY = event.rawY
+                    return false // allow click and long press to work
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    params.x = initialX + (event.rawX - initialTouchX).toInt()
+                    params.y = initialY + (event.rawY - initialTouchY).toInt()
+                    windowManager.updateViewLayout(floatingButton, params)
+                    return true
+                }
+            }
+            return false
+        }
+    }
 }
