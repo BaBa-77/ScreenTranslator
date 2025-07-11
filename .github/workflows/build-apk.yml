@@ -1,10 +1,8 @@
 name: Build APK
 
 on:
-  push:
-    branches:
-      - cnfont  # atau 'master' tergantung nama branch kamu
-
+  workflow_dispatch:
+  
 jobs:
   build:
     runs-on: ubuntu-latest
