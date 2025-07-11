@@ -1,0 +1,14 @@
+{
+  "name": "For Testing",
+  "build": {
+    "dockerfile": "Dockerfile_test"
+  },
+  "extensions": [
+    "fwcd.kotlin",
+    "vscjava.vscode-gradle",
+    "esafirm.android-i18n",
+    "bmuskalla.android-lint",
+    "vscode-icons-team.vscode-icons"
+  ],
+  "postCreateCommand": "./gradlew build"
+}
