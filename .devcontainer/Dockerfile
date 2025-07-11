@@ -18,3 +18,9 @@ ENV PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/plat
 # Accept licenses and install necessary SDK components
 RUN yes | sdkmanager --licenses && \
     sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.0"
+
+# Install Kotlin Language Server
+RUN wget -q https://github.com/fwcd/kotlin-language-server/releases/download/1.4.7/kotlin-language-server-1.4.7.zip -O /tmp/kls.zip && \
+    unzip /tmp/kls.zip -d /opt/kotlin-language-server && \
+    ln -s /opt/kotlin-language-server/bin/kotlin-language-server /usr/local/bin/kotlin-language-server && \
+    rm /tmp/kls.zip
