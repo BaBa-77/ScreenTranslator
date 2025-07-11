@@ -3,10 +3,6 @@
   "build": {
     "dockerfile": "Dockerfile"
   },
-  "image": "mcr.microsoft.com/devcontainers/java:17", 
-  "features": {
-    "ghcr.io/devcontainers-contrib/features/android-sdk:1": {}
-  },
   "extensions": [
     "fwcd.kotlin",
     "vscjava.vscode-gradle",
