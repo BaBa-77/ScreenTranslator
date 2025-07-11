@@ -1,24 +1,15 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/base:ubuntu-22.04",
+  "name": "Android Kotlin Dev",
+  "image": "mcr.microsoft.com/devcontainers/java:17", 
   "features": {
-    "ghcr.io/devcontainers/features/android-sdk:1": {
-      "version": "34",
-      "build-tools-version": "34.0.0",
-      "platforms-version": "34",
-      "ndk-version": "25.1.8937393",
-      "cmake-version": "3.22.1",
-      "emulator": false
-    }
+    "ghcr.io/devcontainers-contrib/features/android-sdk:1": {}
   },
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "fwcd.kotlin",
-        "bmuskalla.android-lint",
-        "vscjava.vscode-gradle",
-        "vscode-icons-team.vscode-icons"
-      ]
-    }
-  },
-  "forwardPorts": [5037]  // Port untuk ADB
+  "extensions": [
+    "fwcd.kotlin",
+    "vscjava.vscode-gradle",
+    "esafirm.android-i18n",
+    "bmuskalla.android-lint",
+    "vscode-icons-team.vscode-icons"
+  ],
+  "postCreateCommand": "./gradlew build"
 }
