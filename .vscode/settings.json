@@ -1,4 +1,5 @@
 {
+  "java.jdt.ls.java.home": "/usr/local/openjdk-17"
   "kotlin.languageServer.enabled": true,
   "kotlin.languageServer.path": "kotlin-language-server",
   "sonarlint.ls.javaHome": "/path/to/jdk-17/", // Wajib untuk SonarLint
